@@ -20,4 +20,5 @@ export const Niveles = sequelize.define('tbl_niveles',{
     icono:{
         type: DataTypes.TEXT
     }
-})
+
+},{timestamps: false});
