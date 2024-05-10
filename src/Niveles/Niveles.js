@@ -1,8 +1,8 @@
-import { sequelize } from "../database/database";
+import { sequelize } from "../database/database.js";
 import { DataTypes } from "sequelize";
 
 
-export const Niveles = sequelize.define('tbl_nivles',{
+export const Niveles = sequelize.define('tbl_niveles',{
     idNivel:{
         type: DataTypes.INTEGER,
         primaryKey: true,

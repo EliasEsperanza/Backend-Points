@@ -44,6 +44,7 @@ export const Cliente = sequelize.define('tbl_cliente', {
     }
 }, {
     timestamps: false,
+    tableName: 'tbl_cliente'
 });
 
 Cliente.belongsTo(CategoriaCliente, { foreignKey: 'idCategoriaCliente' });

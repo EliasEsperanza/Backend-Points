@@ -1,6 +1,6 @@
 import { sequelize } from "../database/database.js";
 import { DataTypes } from 'sequelize';
-import { Nivel } from "../Nivel/Nivel.js";
+import { Nivel } from "../Niveles/Niveles.js";
 
 export const Premio = sequelize.define('tbl_premio', {
     idPremio: {

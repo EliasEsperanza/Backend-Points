@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../database/database";
+import { sequelize } from "../database/database.js";
 
 export const Sucursal = sequelize.define('tbl_sucursal', {
     idSucursal:{
