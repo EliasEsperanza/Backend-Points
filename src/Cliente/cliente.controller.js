@@ -24,7 +24,8 @@ export const createCliente = async (req, res) => {
             telefono,
             direccion,
             correo,
-
+            idCategoriaCliente,
+            idTipoCliente
         }, {
             fields: ['nombreCliente', 'dui', 'nit', 'nrc', 'telefono', 'direccion', 'correo', 'idCategoriaCliente', 'idTipoCliente']
         });
