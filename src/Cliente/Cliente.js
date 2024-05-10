@@ -1,7 +1,7 @@
 import { sequelize } from "../database/database.js";
 import { DataTypes } from 'sequelize';
-import { CategoriaCliente } from "./CategoriaCliente.js";
-import { TipoCliente } from "./TipoCliente.js";
+import { CategoriaCliente } from "../CategoriaCliente/CategoriaCliente.js";
+import { TipoCliente } from "../TipoCliente/TipoCliente.js";
 
 export const Cliente = sequelize.define('tbl_cliente', {
     idCliente: {
