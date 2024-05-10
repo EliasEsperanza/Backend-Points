@@ -1,7 +1,6 @@
-import { Types } from "mysql2";
 import { sequelize } from "../database/database";
 import { DataTypes } from "sequelize";
-import { type } from "express/lib/response";
+
 
 export const Niveles = sequelize.define('tbl_nivles',{
     idNivel:{
@@ -10,8 +9,7 @@ export const Niveles = sequelize.define('tbl_nivles',{
         autoIncrement: true
     },
     descripcion:{
-        type: DataTypes.STRING(300),
-        allowNull: false
+        type: DataTypes.STRING(300)
     },
     puntosInicio:{
         type:DataTypes.INTEGER
