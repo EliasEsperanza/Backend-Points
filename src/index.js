@@ -1,19 +1,19 @@
 import app from "./app.js";
-import {sequelize} from "./database/database.js";
+import { sequelize } from "./database/database.js";
 
-if (process.env.NODE_ENV !== "production") {   
+if (process.env.NODE_ENV !== "production") {
     require("dotenv").config();
 }
 
 const PORT = process.env.PORT || 3000;
 
-async function main(){
-    try{
-        await sequelize.sync({alter: true});
+async function main() {
+    try {
+        await sequelize.sync({ alter: true });
         console.log("Connection has been established successfully");
         app.listen(PORT)
-        console.log("Server running on port ",PORT);
-    }catch(error){
+        console.log("Server running on port ", PORT);
+    } catch (error) {
         console.log(error);
     }
 }
