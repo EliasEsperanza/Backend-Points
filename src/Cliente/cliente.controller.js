@@ -1,4 +1,6 @@
 import {Cliente} from './Cliente.js';
+import {Usuario} from '../Usuario/Usuario.js';
+
 
 export const getClientes = async (req, res) => {
     try {
@@ -15,7 +17,7 @@ export const getClientes = async (req, res) => {
 
 export const createCliente = async (req, res) => {
     try {
-        const { nombreCliente, correo, telefono, direccion,dui,nit,nrc, idCategoriaCliente, idTipoCliente } = req.body;
+        const { nombreCliente, correo, telefono, direccion,dui,nit,nrc, idCategoriaCliente, idTipoCliente, password } = req.body;
         const newCliente = await Cliente.create({
             nombreCliente,
             dui,
@@ -24,15 +26,22 @@ export const createCliente = async (req, res) => {
             telefono,
             direccion,
             correo,
+            password,
             idCategoriaCliente,
             idTipoCliente
         }, {
-            fields: ['nombreCliente', 'dui', 'nit', 'nrc', 'telefono', 'direccion', 'correo', 'idCategoriaCliente', 'idTipoCliente']
+            fields: ['nombreCliente', 'dui', 'nit', 'nrc', 'telefono', 'direccion', 'correo', 'password','idCategoriaCliente', 'idTipoCliente', 'password']
         });
+
+        const usuario = await Usuario.create({
+            correo,
+            password
+        });
+
         if (newCliente) {
             res.json({
                 message: 'Cliente creado exitosamente',
-                data: newCliente
+                data: newCliente, usuario
             });
         }
     } catch (error) {
