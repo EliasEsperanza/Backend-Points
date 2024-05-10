@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../database/database";
+import { sequelize } from "../database/database.js";
 
 export const CategoriaPromocion = sequelize('tbl_categoria_promocion',{
     idCategoriaPromocion:{
