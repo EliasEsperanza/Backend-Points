@@ -19,4 +19,4 @@ export const Sucursal = sequelize.define('tbl_sucursal', {
     cordenadas:{
         type: DataTypes.STRING(400)
     }
-})
+},{timestamps: false});

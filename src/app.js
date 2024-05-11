@@ -3,6 +3,7 @@ import clienteRoutes from './Cliente/cliente.routes.js';
 import categoriaClienteRoutes from './CategoriaCliente/categoriaCliente.routes.js';
 import tipoClienteRoutes from './TipoCliente/tipoCliente.routes.js';
 import  nivelesRoutes  from "./Niveles/niveles.routes.js";
+import canjeRoutes from "./Canje/canje.routes.js";
 
 const app = express();
 
@@ -11,5 +12,6 @@ app.use(clienteRoutes);
 app.use(categoriaClienteRoutes);
 app.use(tipoClienteRoutes);
 app.use(nivelesRoutes);
+app.use(canjeRoutes);
 
 export default app;

@@ -16,4 +16,4 @@ export const Periodo = sequelize.define('tbl_periodo',{
     estado:{
         type:DataTypes.TINYINT
     }
-})
+},{timestamps: false});

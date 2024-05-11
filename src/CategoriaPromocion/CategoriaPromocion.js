@@ -10,4 +10,4 @@ export const CategoriaPromocion = sequelize('tbl_categoria_promocion',{
     nombreCategoria:{
         type: DataTypes.STRING(300)
     }
-})
+},{timestamps: false});
