@@ -34,10 +34,6 @@ export const Cliente = sequelize.define('tbl_cliente', {
         type: DataTypes.STRING(100),
         allowNull: false
     },
-    password: {
-        type: DataTypes.STRING(200),
-        allowNull: false
-    },
     idCategoriaCliente: {
         type: DataTypes.INTEGER,
         allowNull: false
