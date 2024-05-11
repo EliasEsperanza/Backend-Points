@@ -1,4 +1,4 @@
-import { Canje } from './Canje';
+import { Canje } from './Canje.js';
 
 
 // Crear un nuevo canje
