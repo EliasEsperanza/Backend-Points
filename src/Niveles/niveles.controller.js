@@ -15,14 +15,14 @@ export const getNiveles = async(req, res) =>{
 
 export const createNiveles = async (req, res)=>{
     try {
-        const{ descripcion, puntosInicio, puntosFin, icono} = req.body;
+        const { descripcion, puntosInicio, puntosFin, icono} = req.body;
         const newNivel = await Niveles.create({
             descripcion,
             puntosInicio,
             puntosFin,
             icono
         }, {
-            fields:['descripcion','puntosInicio', 'puntosFin', 'icono']
+            fields: ['descripcion','puntosInicio', 'puntosFin', 'icono']
         });
         if (newNivel) {
             res.json({

@@ -5,7 +5,8 @@ import tipoClienteRoutes from './TipoCliente/tipoCliente.routes.js';
 import  nivelesRoutes  from "./Niveles/niveles.routes.js";
 import usuarioRoutes from './Usuario/usuario.routes.js';
 import canjeRoutes from "./Canje/canje.routes.js";
-
+import categoriapromocionRouter from './CategoriaPromocion/categoriapromocion.routes.js';
+import periodoRouter from './Periodo/periodo.routes.js';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(tipoClienteRoutes);
 app.use(nivelesRoutes);
 app.use(usuarioRoutes);
 app.use(canjeRoutes);
-
+app.use(categoriapromocionRouter);
+app.use(periodoRouter);
 
 export default app;
