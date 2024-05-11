@@ -1,5 +1,9 @@
 import argon2 from 'argon2';
 import { Usuario } from '../Usuario/Usuario.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export const login = async (req, res) => {
     try {
@@ -29,9 +33,21 @@ export const login = async (req, res) => {
             });
         }
 
+        // Crear un token JWT
+        const token = jwt.sign({
+            idUsuario: usuario.idUsuario,
+            correo: usuario.correo
+        }, process.env.JWT_SECRET, {
+            expiresIn: '1h'
+        });
+
+
         // Responder con éxito
         res.json({
-            message: 'Inicio de sesión exitoso'
+            message: 'Inicio de sesión exitoso',
+            idUsuario: usuario.idUsuario,
+            correo: usuario.correo,
+            token
         });
     } catch (error) {
         res.status(500).json({
