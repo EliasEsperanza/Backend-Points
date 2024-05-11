@@ -3,10 +3,10 @@ import { createPeriodo, getPeriodos, getPeriodoById, updatePeriodo, deletePeriod
 
 const router = Router();
 
-router.post('/periodos', createPeriodo);
-router.get('/periodos', getPeriodos);
-router.get('/periodos/:id', getPeriodoById);
-router.put('/periodos/:id', updatePeriodo);
-router.delete('/periodos/:id', deletePeriodo);
+router.post('/periodo', createPeriodo);
+router.get('/periodo', getPeriodos);
+router.get('/periodo/:id', getPeriodoById);
+router.put('/periodo/:id', updatePeriodo);
+router.delete('/periodo/:id', deletePeriodo);
 
 export default router;

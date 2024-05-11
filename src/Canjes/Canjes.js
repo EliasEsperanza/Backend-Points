@@ -40,6 +40,7 @@ export const Canje = sequelize.define('tbl_canjes', {
   }
 }, {
   timestamps: false,
+  tableName: 'tbl_canjes'
 });
 
 Canje.belongsTo(Cliente, { foreignKey: 'idCliente' });

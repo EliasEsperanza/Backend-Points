@@ -34,6 +34,7 @@ export const Premio = sequelize.define('tbl_premio', {
     }
 }, {
     timestamps: false,
+    tableName: 'tbl_premio'
 });
 
 Premio.belongsTo(Niveles, { foreignKey: 'idNivel' });

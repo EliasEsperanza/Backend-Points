@@ -3,10 +3,10 @@ import { createPremio, getPremios, getPremioById, updatePremio, deletePremio } f
 
 const router = Router();
 
-router.post('/premios', createPremio);
-router.get('/premios', getPremios);
-router.get('/premios/:id', getPremioById);
-router.put('/premios/:id', updatePremio);
-router.delete('/premios/:id', deletePremio);
+router.post('/premio', createPremio);
+router.get('/premio', getPremios);
+router.get('/premio/:id', getPremioById);
+router.put('/premio/:id', updatePremio);
+router.delete('/premio/:id', deletePremio);
 
 export default router;

@@ -4,10 +4,12 @@ import categoriaClienteRoutes from './CategoriaCliente/categoriaCliente.routes.j
 import tipoClienteRoutes from './TipoCliente/tipoCliente.routes.js';
 import  nivelesRoutes  from "./Niveles/niveles.routes.js";
 import usuarioRoutes from './Usuario/usuario.routes.js';
-import canjeRoutes from "./Canje/canje.routes.js";
+import canjeRoutes from "./Canjes/canjes.routes.js";
 import categoriapromocionRouter from './CategoriaPromocion/categoriapromocion.routes.js';
 import periodoRouter from './Periodo/periodo.routes.js';
 import premioRouter from './Premio/premio.routes.js';
+import sucursalRouter from './Sucursal/sucursal.routes.js';
+import ventaRouter from './Ventas/ventas.routes.js';
 
 const app = express();
 
@@ -21,5 +23,7 @@ app.use(canjeRoutes);
 app.use(categoriapromocionRouter);
 app.use(periodoRouter);
 app.use(premioRouter);
+app.use(sucursalRouter);
+app.use(ventaRouter);
 
 export default app;

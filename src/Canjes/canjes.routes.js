@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCanje, getCanjes, getCanjeById, updateCanje, deleteCanje } from "./canje.controller.js";
+import { createCanje, getCanjes, getCanjeById, updateCanje, deleteCanje } from "./canjes.controller.js";
 
 const router = Router();
 

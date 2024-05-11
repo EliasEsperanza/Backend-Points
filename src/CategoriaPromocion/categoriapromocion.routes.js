@@ -3,10 +3,10 @@ import { createCategoriaPromocion, getCategoriasPromocion, getCategoriaPromocion
 
 const router = Router();
 
-router.post('/categorias-promocion', createCategoriaPromocion);
-router.get('/categorias-promocion', getCategoriasPromocion);
-router.get('/categorias-promocion/:id', getCategoriaPromocionById);
-router.put('/categorias-promocion/:id', updateCategoriaPromocion);
-router.delete('/categorias-promocion/:id', deleteCategoriaPromocion);
+router.post('/categoria-promocion', createCategoriaPromocion);
+router.get('/categoria-promocion', getCategoriasPromocion);
+router.get('/categoria-promocion/:id', getCategoriaPromocionById);
+router.put('/categoria-promocion/:id', updateCategoriaPromocion);
+router.delete('/categoria-promocion/:id', deleteCategoriaPromocion);
 
 export default router;
