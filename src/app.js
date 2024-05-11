@@ -10,6 +10,7 @@ import periodoRouter from './Periodo/periodo.routes.js';
 import premioRouter from './Premio/premio.routes.js';
 import sucursalRouter from './Sucursal/sucursal.routes.js';
 import ventaRouter from './Ventas/ventas.routes.js';
+import loginRouter from './auth/login.routes.js';
 
 const app = express();
 
@@ -25,5 +26,6 @@ app.use(periodoRouter);
 app.use(premioRouter);
 app.use(sucursalRouter);
 app.use(ventaRouter);
+app.use(loginRouter);
 
 export default app;
