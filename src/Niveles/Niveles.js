@@ -21,4 +21,4 @@ export const Niveles = sequelize.define('tbl_niveles',{
         type: DataTypes.TEXT
     }
 
-},{timestamps: false});
+},{timestamps: false, tableName: 'tbl_niveles'});
