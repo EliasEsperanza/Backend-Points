@@ -16,7 +16,7 @@ export const Usuario = sequelize.define('tbl_usuario', {
         type: DataTypes.STRING(100),
         allowNull: false
     },
-    password: {
+    passwordHash: {
         type: DataTypes.STRING(200),
         allowNull: false
     },
