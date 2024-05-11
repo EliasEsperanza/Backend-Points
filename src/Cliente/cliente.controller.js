@@ -1,4 +1,6 @@
-import {Cliente} from './Cliente.js';
+import { Cliente } from './Cliente.js';
+import { Usuario } from '../Usuario/Usuario.js';
+
 
 export const getClientes = async (req, res) => {
     try {
@@ -15,7 +17,9 @@ export const getClientes = async (req, res) => {
 
 export const createCliente = async (req, res) => {
     try {
-        const { nombreCliente, correo, telefono, direccion,dui,nit,nrc, idCategoriaCliente, idTipoCliente } = req.body;
+        const { nombreCliente, correo, telefono, direccion, dui, nit, nrc, idCategoriaCliente, idTipoCliente, password } = req.body;
+
+        // Crear el cliente
         const newCliente = await Cliente.create({
             nombreCliente,
             dui,
@@ -24,15 +28,35 @@ export const createCliente = async (req, res) => {
             telefono,
             direccion,
             correo,
+            password,
             idCategoriaCliente,
             idTipoCliente
-        }, {
-            fields: ['nombreCliente', 'dui', 'nit', 'nrc', 'telefono', 'direccion', 'correo', 'idCategoriaCliente', 'idTipoCliente']
         });
+
+        // Si el cliente se creó exitosamente, crear el usuario asociado
         if (newCliente) {
-            res.json({
-                message: 'Cliente creado exitosamente',
-                data: newCliente
+            // Crear el usuario con el mismo correo y contraseña que el cliente
+            const usuario = await Usuario.create({
+                correo,
+                password
+            });
+
+            // Si el usuario se creó exitosamente, responder con éxito
+            if (usuario) {
+                res.json({
+                    message: 'Cliente y usuario creados exitosamente',
+                    data: { cliente: newCliente, usuario }
+                });
+            } else {
+                // Si no se pudo crear el usuario, responder con un error
+                res.status(500).json({
+                    message: 'Error al crear el usuario asociado al cliente'
+                });
+            }
+        } else {
+            // Si no se pudo crear el cliente, responder con un error
+            res.status(500).json({
+                message: 'Error al crear el cliente'
             });
         }
     } catch (error) {
@@ -40,7 +64,7 @@ export const createCliente = async (req, res) => {
             message: error.message
         });
     }
-}
+};
 
 export const getClienteById = async (req, res) => {
     try {
@@ -63,7 +87,7 @@ export const getClienteById = async (req, res) => {
 export const updateCliente = async (req, res) => {
     try {
         const { id } = req.params;
-        const { nombreCliente, correo, telefono, direccion,dui,nit,nrc, idCategoriaCliente, idTipoCliente } = req.body;
+        const { nombreCliente, correo, telefono, direccion, dui, nit, nrc, idCategoriaCliente, idTipoCliente } = req.body;
         const cliente = await Cliente.findOne({
             where: {
                 idCliente: id
