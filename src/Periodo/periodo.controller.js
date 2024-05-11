@@ -1,4 +1,4 @@
-import { Periodo } from '../models';
+import { Periodo } from './Periodo.js';
 
 // Crear un nuevo periodo
 export const createPeriodo = async (req, res) => {

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createCategoriaPromocion, getCategoriasPromocion, getCategoriaPromocionById, updateCategoriaPromocion, deleteCategoriaPromocion } from './categoriaPromocion.controller.js';
+import { createCategoriaPromocion, getCategoriasPromocion, getCategoriaPromocionById, updateCategoriaPromocion, deleteCategoriaPromocion } from './categoriapromocion.controller.js';
 
 const router = Router();
 

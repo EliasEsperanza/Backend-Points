@@ -7,6 +7,7 @@ import usuarioRoutes from './Usuario/usuario.routes.js';
 import canjeRoutes from "./Canje/canje.routes.js";
 import categoriapromocionRouter from './CategoriaPromocion/categoriapromocion.routes.js';
 import periodoRouter from './Periodo/periodo.routes.js';
+import premioRouter from './Premio/premio.routes.js';
 
 const app = express();
 
@@ -19,5 +20,6 @@ app.use(usuarioRoutes);
 app.use(canjeRoutes);
 app.use(categoriapromocionRouter);
 app.use(periodoRouter);
+app.use(premioRouter);
 
 export default app;
