@@ -3,7 +3,7 @@ import { DataTypes } from 'sequelize';
 import { Cliente } from "../Cliente/Cliente.js";
 import { Niveles } from "../Niveles/Niveles.js";
 
-export const Usuario = sequelize.define('tbl_usuario', {
+export const Usuario = sequelize.define('tbl_usuario_cliente', {
     idUsuario: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -23,15 +23,17 @@ export const Usuario = sequelize.define('tbl_usuario', {
     },
     puntos: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        defaultValue: 0
     },
     idNivel:{
         type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 1
     }
 }, {
     timestamps: false,
-    tableName: 'tbl_usuario'
+    tableName: 'tbl_usuario_cliente'
 });
 
 Usuario.belongsTo(Cliente, { foreignKey: 'idCliente' });
