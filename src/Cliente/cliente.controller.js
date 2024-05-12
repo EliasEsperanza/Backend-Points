@@ -1,6 +1,6 @@
 import { Cliente } from './Cliente.js';
 import { Usuario } from '../Usuario/Usuario.js';
-import bcrypt from 'bcrypt';
+import argon2 from 'argon2';
 
 export const getClientes = async (req, res) => {
     try {
@@ -15,31 +15,31 @@ export const getClientes = async (req, res) => {
     }
 }
 
-const hashPassword = async (password) => {
-    const salt = await bcrypt.genSalt(10);
-    return await bcrypt.hash(password, salt);
-}
-
-const hashEmail = async (email) => {
-    return await bcrypt.hash(email, 10);
+const hashData = async (data) => {
+    return await argon2.hash(data);
 }
 
 export const createCliente = async (req, res) => {
     try {
         const { nombreCliente, correo, telefono, direccion, dui, nit, nrc, idCategoriaCliente, idTipoCliente, passwordHash } = req.body;
 
-        const newPasswordHash = await hashPassword(passwordHash);
-        const newCorreoHash = await hashEmail(correo);
+        const newPasswordHash = await hashData(passwordHash);
+        const newTelefonoHash = await hashData(telefono);
+        const newDireccionHash = await hashData(direccion);
+        const newDuiHash = await hashData(dui);
+        const newNitHash = await hashData(nit);
+        const newNrcHash = await hashData(nrc);
+
 
         // Crear el cliente
         const newCliente = await Cliente.create({
             nombreCliente,
-            dui,
-            nit,
-            nrc,
-            telefono,
-            direccion,
-            correo: newCorreoHash,
+            dui: newDuiHash,
+            nit: newNitHash,
+            nrc: newNrcHash,
+            telefono: newTelefonoHash,
+            direccion: newDireccionHash,
+            correo,
             idCategoriaCliente,
             idTipoCliente
         });
@@ -48,7 +48,7 @@ export const createCliente = async (req, res) => {
         if (newCliente) {
             // Crear el usuario con el mismo correo y contraseña que el cliente
             const usuario = await Usuario.create({
-                correo: newCorreoHash,
+                correo,
                 passwordHash: newPasswordHash,
                 idCliente: newCliente.idCliente
             });
