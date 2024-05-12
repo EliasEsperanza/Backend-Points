@@ -13,8 +13,8 @@ export const createPremio = async (req, res) => {
 // Obtener todos los premios
 export const getPremios = async (req, res) => {
     try {
-        const premios = await Premio.findAll();
-        res.json(premios);
+        const premio = await Premio.findAll();
+        res.json(premio);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
