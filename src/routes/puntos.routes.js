@@ -1,7 +1,7 @@
-import {Router} from 'express';
-import {crearCanje} from '../controller/puntos.js';
+import { Router } from 'express';
+import { crearCanje } from '../controller/puntos.js';
 
 const router = Router();
-router.post('/canje/usuario', crearCanje);
+router.post('/usuario/canje/premio', crearCanje);
 
 export default router;

@@ -4,6 +4,7 @@ import { Canje } from "../Canjes/Canjes.js";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { Cliente } from "../Cliente/Cliente.js";
+import { Venta } from "../Ventas/Ventas.js";   
 
 dotenv.config();
 
@@ -22,13 +23,18 @@ export const crearCanje = async (req, res) => {
                 idCliente: usuario.idCliente
             }
         });
+        const venta = await Venta.findOne({
+            where: {
+                idCliente: usuario.idCliente
+            }
+        });
         const premio = await Premio.findOne({
             where: {
                 idPremio
             }
         });
         if (!premio) {
-            return res.status(404).json({
+            return res.status(405).json({
                 message: 'Premio no encontrado'
             });
         }
@@ -49,8 +55,10 @@ export const crearCanje = async (req, res) => {
             idUsuario: usuario.idUsuario,
             idPremio,
             idCliente: usuario.idCliente,
+            idSucursal: venta.idSucursal,
+            puntosCanjeados: premio.puntos,
             fechaCanje: new Date(),
-            nombreCliente: cliente.nombre,
+            nombreCliente: cliente.nombreCliente,
             costo
         });
         await usuario.update({
