@@ -8,6 +8,6 @@ router.post('/cliente', createCliente);
 router.get('/cliente/:id', getClienteById);
 router.put('/cliente/:id', updateCliente);
 router.delete('/cliente/:id', deleteCliente);
-router.get('/clienteV/:id', ObtenerVentas);
+router.get('/cliente/ventas/:id', ObtenerVentas);
 
 export default router;

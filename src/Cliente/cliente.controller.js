@@ -2,8 +2,6 @@ import { Cliente } from './Cliente.js';
 import { Usuario } from '../Usuario/Usuario.js';
 import argon2 from 'argon2';
 import {Venta} from '../Ventas/Ventas.js';
-import { Usuario } from '../Usuario/Usuario.js';
-import { where } from 'sequelize';
 
 export const getClientes = async (req, res) => {
     try {
