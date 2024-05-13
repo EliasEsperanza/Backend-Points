@@ -1,6 +1,9 @@
 import { Cliente } from './Cliente.js';
 import { Usuario } from '../Usuario/Usuario.js';
 import argon2 from 'argon2';
+import {Venta} from '../Ventas/Ventas.js';
+import { Usuario } from '../Usuario/Usuario.js';
+import { where } from 'sequelize';
 
 export const getClientes = async (req, res) => {
     try {
@@ -76,7 +79,7 @@ export const createCliente = async (req, res) => {
             message: error.message
         });
     }
-};
+}
 
 export const getClienteById = async (req, res) => {
     try {
@@ -146,3 +149,50 @@ export const deleteCliente = async (req, res) => {
     }
 }
 
+export const ObtenerVentas = async (req, res) =>{
+    try {
+        const { id } = req.params;
+        // Verifica si id está presente
+        if (!id) {
+            return res.status(400).json({ message: 'Falta el parámetro de ID en la solicitud' });
+        }
+
+        const ventas = await Venta.findAll({
+            where: {
+                idCliente: id
+            }
+        });
+        let sumas = 0;
+        ventas.forEach(element => {
+            if (element.puntosGanados !== undefined) {
+                sumas += element.puntosGanados || 0;
+            }
+            
+        });
+        const Usur = await Usuario.findOne({
+            where:{
+                idCliente: id
+            }
+        });
+
+        if (Usur) {
+            await Usur.update({
+                puntosGanados: sumas
+            });
+        } else {
+            // Manejo de error si no se encuentra el usuario
+            res.json({
+                message: 'no se encontro usuario para agregar puntos para canjear',
+            });
+        }
+
+        res.json({
+            message: 'puntos para canjear',
+            count: sumas
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}

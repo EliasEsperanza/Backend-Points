@@ -21,7 +21,7 @@ export const Usuario = sequelize.define('tbl_usuario_cliente', {
         type: DataTypes.STRING(200),
         allowNull: false
     },
-    puntos: {
+    puntos:{
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0
@@ -35,6 +35,6 @@ export const Usuario = sequelize.define('tbl_usuario_cliente', {
     timestamps: false,
     tableName: 'tbl_usuario_cliente'
 });
-
+Usuario.belongsTo(Niveles, { foreignKey: 'idNivel'});
 Usuario.belongsTo(Cliente, { foreignKey: 'idCliente' });
-Usuario.belongsTo(Niveles, { foreignKey: 'idNivel' });
+
