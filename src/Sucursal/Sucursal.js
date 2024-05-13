@@ -8,15 +8,19 @@ export const Sucursal = sequelize.define('tbl_sucursal', {
         autoIncrement:true
     },
     nombreSucursal:{
-        type:DataTypes.STRING(300)
+        type:DataTypes.STRING(300),
+        allowNull:false
     },
     direccion:{
-        type: DataTypes.TEXT
+        type: DataTypes.TEXT,
+        allowNull: false
     },
     telefono:{
-        type: DataTypes.STRING(30)
+        type: DataTypes.STRING(30),
+        allowNull: false
     },
     cordenadas:{
-        type: DataTypes.STRING(400)
+        type: DataTypes.STRING(400),
+        allowNull: false
     }
 },{timestamps: false, tableName: 'tbl_sucursal'});
