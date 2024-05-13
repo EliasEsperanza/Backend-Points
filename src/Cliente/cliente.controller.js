@@ -2,6 +2,7 @@ import { Cliente } from './Cliente.js';
 import { Usuario } from '../Usuario/Usuario.js';
 import argon2 from 'argon2';
 import {Venta} from '../Ventas/Ventas.js';
+import { sequelize } from "../database/database.js";
 
 export const getClientes = async (req, res) => {
     try {
@@ -21,7 +22,10 @@ const hashData = async (data) => {
 }
 
 export const createCliente = async (req, res) => {
+    const t = await sequelize.transaction();
     try {
+        
+
         const { nombreCliente, correo, telefono, direccion, dui, nit, nrc, idCategoriaCliente, idTipoCliente, passwordHash } = req.body;
 
         const newPasswordHash = await hashData(passwordHash);
@@ -43,7 +47,7 @@ export const createCliente = async (req, res) => {
             correo,
             idCategoriaCliente,
             idTipoCliente
-        });
+        },{ transaction: t });
 
         // Si el cliente se creó exitosamente, crear el usuario asociado
         if (newCliente) {
@@ -52,8 +56,10 @@ export const createCliente = async (req, res) => {
                 correo,
                 passwordHash: newPasswordHash,
                 idCliente: newCliente.idCliente
-            });
+            },{ transaction: t });
 
+
+            await t.commit();
             // Si el usuario se creó exitosamente, responder con éxito
             if (usuario) {
                 res.json({
@@ -68,11 +74,13 @@ export const createCliente = async (req, res) => {
             }
         } else {
             // Si no se pudo crear el cliente, responder con un error
+            
             res.status(500).json({
                 message: 'Error al crear el cliente'
             });
         }
     } catch (error) {
+        await t.rollback();
         res.status(500).json({
             message: error.message
         });

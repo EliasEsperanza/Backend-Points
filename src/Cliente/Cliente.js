@@ -14,13 +14,19 @@ export const Cliente = sequelize.define('tbl_cliente', {
         allowNull: false
     },
     dui: {
-        type: DataTypes.STRING(30)
+        type: DataTypes.STRING(30),
+        unique: true,
+        allowNull: false
     },
     nit: {
-        type: DataTypes.STRING(30)
+        type: DataTypes.STRING(30),
+        unique: true,
+        allowNull: false
     },
     nrc: {
-        type: DataTypes.STRING(30)
+        type: DataTypes.STRING(30),
+        unique: true,
+        allowNull: false
     },
     telefono: {
         type: DataTypes.STRING(30),
