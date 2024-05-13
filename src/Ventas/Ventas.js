@@ -1,6 +1,6 @@
 import { sequelize } from "../database/database.js";
 import { DataTypes } from 'sequelize';
-import { Cliente } from "../Cliente/cliente.js";
+import { Cliente } from "../Cliente/Cliente.js";
 import { Sucursal } from "../Sucursal/Sucursal.js";
 import { Periodo } from "../Periodo/Periodo.js";
 
@@ -40,6 +40,7 @@ export const Venta = sequelize.define('tbl_ventas', {
     }
 }, {
     timestamps: false,
+    tableName: 'tbl_ventas'
 });
 
 Venta.belongsTo(Sucursal, { foreignKey: 'idSucursal' });

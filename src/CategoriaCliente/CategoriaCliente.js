@@ -13,4 +13,6 @@ export const CategoriaCliente = sequelize.define('tbl_categoria_cliente', {
     }
 }, {
     timestamps: false,
+    tableName: 'tbl_categoria_cliente'
 });
+

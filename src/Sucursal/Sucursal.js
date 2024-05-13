@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../database/database";
+import { sequelize } from "../database/database.js";
 
 export const Sucursal = sequelize.define('tbl_sucursal', {
     idSucursal:{
@@ -19,4 +19,4 @@ export const Sucursal = sequelize.define('tbl_sucursal', {
     cordenadas:{
         type: DataTypes.STRING(400)
     }
-})
+},{timestamps: false, tableName: 'tbl_sucursal'});

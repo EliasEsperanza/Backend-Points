@@ -13,4 +13,5 @@ export const TipoCliente = sequelize.define('tbl_tipo_cliente', {
     }
 }, {
     timestamps: false,
+    tableName: 'tbl_tipo_cliente'
 });

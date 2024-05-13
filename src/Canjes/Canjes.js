@@ -1,6 +1,6 @@
 import { sequelize } from "../database/database.js";
 import { DataTypes } from 'sequelize';
-import { Cliente } from "../Cliente/cliente.js";
+import { Cliente } from "../Cliente/Cliente.js";
 import { Sucursal } from "../Sucursal/Sucursal.js";
 import { Premio } from "../Premio/Premio.js";
 
@@ -40,6 +40,7 @@ export const Canje = sequelize.define('tbl_canjes', {
   }
 }, {
   timestamps: false,
+  tableName: 'tbl_canjes'
 });
 
 Canje.belongsTo(Cliente, { foreignKey: 'idCliente' });

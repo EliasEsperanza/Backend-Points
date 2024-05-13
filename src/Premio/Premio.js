@@ -1,6 +1,6 @@
 import { sequelize } from "../database/database.js";
 import { DataTypes } from 'sequelize';
-import { Nivel } from "../Nivel/Nivel.js";
+import { Niveles } from "../Niveles/Niveles.js";
 
 export const Premio = sequelize.define('tbl_premio', {
     idPremio: {
@@ -34,6 +34,7 @@ export const Premio = sequelize.define('tbl_premio', {
     }
 }, {
     timestamps: false,
+    tableName: 'tbl_premio'
 });
 
-Premio.belongsTo(Nivel, { foreignKey: 'idNivel' });
+Premio.belongsTo(Niveles, { foreignKey: 'idNivel' });

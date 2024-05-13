@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../database/database";
+import { sequelize } from "../database/database.js";
 
-export const CategoriaPromocion = sequelize('tbl_categoria_promocion',{
+export const CategoriaPromocion = sequelize.define('tbl_categoria_promocion',{
     idCategoriaPromocion:{
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -10,4 +10,7 @@ export const CategoriaPromocion = sequelize('tbl_categoria_promocion',{
     nombreCategoria:{
         type: DataTypes.STRING(300)
     }
-})
+},{
+    timestamps: false,
+    tableName: 'tbl_categoria_promocion'
+});
