@@ -175,7 +175,7 @@ export const ObtenerVentas = async (req, res) =>{
 
         if (Usur) {
             await Usur.update({
-                puntosGanados: sumas
+                puntos: sumas
             });
         } else {
             // Manejo de error si no se encuentra el usuario
