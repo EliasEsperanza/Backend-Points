@@ -23,7 +23,6 @@ export const Usuario = sequelize.define('tbl_usuario_cliente', {
     },
     puntos:{
         type: DataTypes.INTEGER,
-<<<<<<< Updated upstream
         allowNull: false,
         defaultValue: 0
     },
@@ -31,13 +30,6 @@ export const Usuario = sequelize.define('tbl_usuario_cliente', {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 1
-=======
-        allowNull:false
-    },
-    idNivel:{
-        type:DataTypes.INTEGER,
-        allowNull:false
->>>>>>> Stashed changes
     }
 }, {
     timestamps: false,
@@ -45,4 +37,4 @@ export const Usuario = sequelize.define('tbl_usuario_cliente', {
 });
 Usuario.belongsTo(Niveles, { foreignKey: 'idNivel'});
 Usuario.belongsTo(Cliente, { foreignKey: 'idCliente' });
-Usuario.belongsTo(Niveles, { foreignKey: 'idNivel' });
+
