@@ -2,8 +2,6 @@ import { Cliente } from './Cliente.js';
 import { Usuario } from '../Usuario/Usuario.js';
 import argon2 from 'argon2';
 import {Venta} from '../Ventas/Ventas.js';
-import { Usuario } from '../Usuario/Usuario.js';
-import { where } from 'sequelize';
 
 export const getClientes = async (req, res) => {
     try {
@@ -177,7 +175,7 @@ export const ObtenerVentas = async (req, res) =>{
 
         if (Usur) {
             await Usur.update({
-                puntosGanados: sumas
+                puntos: sumas
             });
         } else {
             // Manejo de error si no se encuentra el usuario
