@@ -19,6 +19,7 @@ const app = express();
 
 app.use(express.json());
 app.use(clienteRoutes);
+app.use(puntosRouter);
 app.use(categoriaClienteRoutes);
 app.use(tipoClienteRoutes);
 app.use(nivelesRoutes);
@@ -31,6 +32,5 @@ app.use(sucursalRouter);
 app.use(ventaRouter);
 app.use(loginRouter);
 app.use(promocionRouter);
-app.use(puntosRouter);
 
 export default app;
