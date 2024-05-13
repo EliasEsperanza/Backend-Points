@@ -12,7 +12,7 @@ import sucursalRouter from './Sucursal/sucursal.routes.js';
 import ventaRouter from './Ventas/ventas.routes.js';
 import loginRouter from './auth/login.routes.js';
 import promocionRouter from './Promocion/promocion.routes.js';
-
+import admindRouter from './Admin/admin.routes.js';
 import puntosRouter from './routes/puntos.routes.js';
 
 const app = express();
@@ -32,5 +32,6 @@ app.use(sucursalRouter);
 app.use(ventaRouter);
 app.use(loginRouter);
 app.use(promocionRouter);
+app.use(admindRouter);
 
 export default app;
