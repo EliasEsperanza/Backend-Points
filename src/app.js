@@ -18,6 +18,8 @@ import vendedorRouter from './vendedor/vendedor.routes.js';
 import admindRouter from './Admin/admin.routes.js';
 import puntosRouter from './routes/puntos.routes.js';
 
+import emailRouter from './email/email.js';
+
 const app = express();
 
 app.use(express.json());
@@ -37,5 +39,6 @@ app.use(loginRouter);
 app.use(promocionRouter);
 app.use(vendedorRouter);
 app.use(admindRouter);
+app.use(emailRouter);
 
 export default app;
