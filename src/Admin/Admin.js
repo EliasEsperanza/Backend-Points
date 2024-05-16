@@ -11,11 +11,20 @@ export const Admin = sequelize.define('tbl_usuario_administrador',{
         type: DataTypes.STRING(300),
         allowNull:false
     },
-    password:{
-        type:DataTypes.STRING(300),
+    correo:{
+        type: DataTypes.STRING(300),
         allowNull:false
+    },imagen:{
+        type: DataTypes.STRING(300),
+        allowNull: false
     },
+    idSucursal:{
+        type: DataTypes.INTEGER,
+        allowNull: false
+    }
 },{
     timestamps: false,
-    tableName: 'tbl_usuario_Administrador'
+    tableName: 'tbl_Administrador'
 });
+
+Admin.belongsTo(Sucursal, {foreignKey: 'idSucursal'});
