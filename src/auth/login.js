@@ -2,9 +2,11 @@ import { Usuario as UsuarioCliente } from "../Usuario/Usuario.js";
 import { UsuarioVendedor } from "../vendedor/usuarioVendedor/UsuarioVendedor.js";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import argon2 from 'argon2';
+import CryptoJS from 'crypto-js';
 
-dotenv.config();
+if (process.env.NODE_ENV !== 'production'){
+    dotenv.config();
+}
 
 // Función para agregar un token a la base de datos
 const addValidTokenToDB = async (userId, token, userType) => {
@@ -24,6 +26,16 @@ const removeValidTokenFromDB = async (userId, userType) => {
     }
 };
 
+const decryptData = async (hash, secretKey) => {
+    const bytes = CryptoJS.AES.decrypt(hash, secretKey || process.env.SECRET_KEY);
+    return bytes.toString(CryptoJS.enc.Utf8);
+}
+
+const compareHashedData = async (data, encryptedData) => {
+    const decryptedData = await decryptData(encryptedData, process.env.SECRET_KEY);
+    return data === decryptedData;
+}
+
 export const login = async (req, res) => {
     try {
         const { correo, usuario, password } = req.body;
@@ -39,7 +51,7 @@ export const login = async (req, res) => {
                 return res.status(404).json({ message: 'Usuario cliente no encontrado' });
             }
 
-            const isMatch = await argon2.verify(usuarioCliente.passwordHash, password);
+            const isMatch = await compareHashedData(password, usuarioCliente.passwordHash);
 
             if (!isMatch) {
                 return res.status(401).json({ message: 'Contraseña incorrecta' });
@@ -72,7 +84,7 @@ export const login = async (req, res) => {
                 return res.status(404).json({ message: 'Usuario vendedor no encontrado' });
             }
 
-            const isMatch = await argon2.verify(usuarioVendedor.password, password);
+            const isMatch = await compareHashedData(password, usuarioVendedor.password);
 
             if (!isMatch) {
                 return res.status(401).json({ message: 'Contraseña incorrecta' });
