@@ -16,24 +16,8 @@ export const Vendedor = sequelize.define('tbl_vendedor',{
         type: DataTypes.STRING(300),
         allowNull: false
     },
-    telefono:{
-        type: DataTypes.STRING(30),
-        allowNull: false
-    },
-    direccion:{
+    imagenVendedor:{
         type: DataTypes.TEXT,
-        allowNull: false
-    },
-    dui:{
-        type: DataTypes.STRING(20),
-        allowNull: false
-    },
-    nit:{
-        type: DataTypes.STRING(20),
-        allowNull: false
-    },
-    nrc:{
-        type: DataTypes.STRING(20),
         allowNull: false
     },
     idSucursal:{
