@@ -16,6 +16,10 @@ export const UsuarioAdmin = sequelize.define('tbl_usuario_admin',{
         type: DataTypes.STRING(300),
         allowNull: false
     },
+    rol:{
+        type: DataTypes.STRING(30),
+        defaultValue: 'Administrador'
+    },
     idAdmin:{
         type:DataTypes.INTEGER,
         allowNull:false
