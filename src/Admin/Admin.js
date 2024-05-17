@@ -1,5 +1,6 @@
 import { sequelize } from '../database/database.js';
 import { DataTypes } from 'sequelize';
+import { Sucursal } from '../Sucursal/Sucursal.js';
 
 export const Admin = sequelize.define('tbl_usuario_administrador',{
     idAdmin:{

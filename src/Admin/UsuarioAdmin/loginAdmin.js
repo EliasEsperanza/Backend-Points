@@ -1,7 +1,7 @@
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { UsuarioAdmin } from "./usuarioAdmin.js";
+import { UsuarioAdmin } from './UsuarioAdmin.js';
 
 dotenv.config();
 

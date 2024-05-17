@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { Admin } from '../Admin';
-s
+import { Admin } from '../Admin.js';
+
 dotenv.config();
 
 export const validateUser = async (req, res, next) => {
