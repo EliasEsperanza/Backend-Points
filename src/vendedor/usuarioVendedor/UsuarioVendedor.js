@@ -16,6 +16,10 @@ export const UsuarioVendedor = sequelize.define('tbl_usuario_vendedor',{
         type: DataTypes.STRING(300),
         allowNull: false
     },
+    rol:{
+        type: DataTypes.STRING(30),
+        defaultValue: 'Vendedor'
+    },
     idVendedor:{
         type: DataTypes.INTEGER,
         allowNull: false
