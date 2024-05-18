@@ -3,8 +3,10 @@ import { Usuario } from '../Usuario/Usuario.js';
 import {Venta} from '../Ventas/Ventas.js';
 import { sequelize } from "../database/database.js";
 import { Niveles } from '../Niveles/Niveles.js';
+import { Periodo } from '../Periodo/Periodo.js';
 import CryptoJS from 'crypto-js';
 import dotenv from 'dotenv';
+
 
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
@@ -200,12 +202,37 @@ export const ObtenerVentas = async (req, res) =>{
                 idCliente: id
             }
         });
-        let sumas = 0;
-        ventas.forEach(element => {
-            if (element.puntosGanados !== undefined) {
-                sumas += element.puntosGanados || 0;
+
+        // Obtener los idPeriodo únicos de las ventas
+        const idPeriodos = [...new Set(ventas.map(venta => venta.idPeriodo))];
+
+        // Obtener todos los períodos activos que están siendo referenciados por las ventas
+        const periodos = await Periodo.findAll({
+            where: {
+                estado: 1,
+                idPeriodo: idPeriodos
             }
-            
+        });
+
+        function toDateOnly(date) {
+            const d = new Date(date);
+            return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        }
+
+        // Sumar los puntos ganados en las ventas dentro de los períodos activos
+        let sumas = 0;
+        ventas.forEach(venta => {
+            periodos.forEach(periodo => {
+                const fechaVenta = toDateOnly(venta.fechaVenta);
+                const fechaInicio = toDateOnly(periodo.fechaInicio);
+                const fechaFin = toDateOnly(periodo.fechaFin);
+                
+                if (venta.puntosGanados !== undefined && 
+                    fechaVenta >= fechaInicio && 
+                    fechaVenta <= fechaFin) {
+                    sumas += venta.puntosGanados || 0;
+                }
+            });
         });
         const Usur = await Usuario.findOne({
             where:{
