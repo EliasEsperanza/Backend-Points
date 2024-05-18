@@ -9,19 +9,6 @@ import dotenv from 'dotenv';
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
 }
-
-export const getClientes = async (req, res) => {
-    try {
-        const clientes = await Cliente.findAll();
-        res.json({
-            data: clientes
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    }
-}
         
 const hashData = async (data,secretKey) => {
     return CryptoJS.AES.encrypt(data, secretKey || process.env.SECRET_KEY).toString();
@@ -92,6 +79,27 @@ export const createCliente = async (req, res) => {
         }
     } catch (error) {
         await t.rollback();
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+export const getClientes = async (req, res) => {
+    try {
+        const clientes = await Cliente.findAll();
+        const decryptedClientes = await Promise.all(clientes.map(async cliente => {
+            return {
+                ...cliente.dataValues,
+                dui: await decryptData(cliente.dui, process.env.SECRET_KEY),
+                nit: await decryptData(cliente.nit, process.env.SECRET_KEY),
+                nrc: await decryptData(cliente.nrc, process.env.SECRET_KEY),
+                telefono: await decryptData(cliente.telefono, process.env.SECRET_KEY),
+                direccion: await decryptData(cliente.direccion, process.env.SECRET_KEY)
+            };
+        }));
+        res.json({ data: decryptedClientes });
+    } catch (error) {
         res.status(500).json({
             message: error.message
         });
