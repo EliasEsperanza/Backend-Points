@@ -1,28 +1,29 @@
 import { Vendedor } from "./Vendedor.js";
 import { UsuarioVendedor } from "./usuarioVendedor/UsuarioVendedor.js";
-import argon2 from 'argon2';
+import CryptoJS from 'crypto-js';
 import { sequelize } from "../database/database.js";
+import dotenv from 'dotenv';
 
-const dataHash = async (data) => {
-    return await argon2.hash(data);
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
+
+const hashData = async (data, secretKey) => {
+    return CryptoJS.AES.encrypt(data, secretKey || process.env.SECRET_KEY).toString();
 }
 
 export const createVendedor = async (req, res) => {
     const t = await sequelize.transaction();
     try {
-        const { nombreVendedor, correo, telefono, direccion, dui, nit, nrc, idSucursal, usuario, password } = req.body;
+        const { nombreVendedor, correo, imagenVendedor,idSucursal, usuario, password } = req.body;
 
-        const passwordHash = await dataHash(password);
+        const passwordHash = await hashData(password, process.env.SECRET_KEY);
 
         // Crear el vendedor
         const vendedor = await Vendedor.create({
             nombreVendedor,
             correo,
-            telefono,
-            direccion,
-            dui,
-            nit,
-            nrc,
+            imagenVendedor,
             idSucursal
         }, { transaction: t });
 

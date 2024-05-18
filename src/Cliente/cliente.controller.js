@@ -1,9 +1,14 @@
 import { Cliente } from './Cliente.js';
 import { Usuario } from '../Usuario/Usuario.js';
-import argon2 from 'argon2';
 import {Venta} from '../Ventas/Ventas.js';
 import { sequelize } from "../database/database.js";
 import { Niveles } from '../Niveles/Niveles.js';
+import CryptoJS from 'crypto-js';
+import dotenv from 'dotenv';
+
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
 
 export const getClientes = async (req, res) => {
     try {
@@ -17,9 +22,14 @@ export const getClientes = async (req, res) => {
         });
     }
 }
+        
+const hashData = async (data,secretKey) => {
+    return CryptoJS.AES.encrypt(data, secretKey || process.env.SECRET_KEY).toString();
+}
 
-const hashData = async (data) => {
-    return await argon2.hash(data);
+const decryptData = async (hash, secretKey) => {
+    const bytes = CryptoJS.AES.decrypt(hash, secretKey || process.env.SECRET_KEY);
+    return bytes.toString(CryptoJS.enc.Utf8);
 }
 
 export const createCliente = async (req, res) => {
@@ -29,12 +39,12 @@ export const createCliente = async (req, res) => {
 
         const { nombreCliente, correo, telefono, direccion, dui, nit, nrc, idCategoriaCliente, idTipoCliente, passwordHash } = req.body;
 
-        const newPasswordHash = await hashData(passwordHash);
-        const newTelefonoHash = await hashData(telefono);
-        const newDireccionHash = await hashData(direccion);
-        const newDuiHash = await hashData(dui);
-        const newNitHash = await hashData(nit);
-        const newNrcHash = await hashData(nrc);
+        const newPasswordHash = await hashData(passwordHash, process.env.SECRET_KEY);
+        const newTelefonoHash = await hashData(telefono, process.env.SECRET_KEY);
+        const newDireccionHash = await hashData(direccion, process.env.SECRET_KEY);
+        const newDuiHash = await hashData(dui, process.env.SECRET_KEY);
+        const newNitHash = await hashData(nit, process.env.SECRET_KEY);
+        const newNrcHash = await hashData(nrc, process.env.SECRET_KEY);
 
 
         // Crear el cliente
@@ -96,15 +106,28 @@ export const getClienteById = async (req, res) => {
                 idCliente: id
             }
         });
-        res.json({
-            data: cliente
-        });
+
+        if (!cliente) {
+            return res.status(404).json({ message: "Cliente no encontrado" });
+        }
+
+        // Desencriptar los datos necesarios
+        const decryptedCliente = {
+            ...cliente.dataValues,
+            dui: await decryptData(cliente.dui, process.env.SECRET_KEY),
+            nit: await decryptData(cliente.nit, process.env.SECRET_KEY),
+            nrc: await decryptData(cliente.nrc, process.env.SECRET_KEY),
+            telefono: await decryptData(cliente.telefono, process.env.SECRET_KEY),
+            direccion: await decryptData(cliente.direccion, process.env.SECRET_KEY),
+        };
+
+        res.json({ data: decryptedCliente });
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        console.error("Error al obtener cliente por ID:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
     }
 }
+
 
 export const updateCliente = async (req, res) => {
     try {
