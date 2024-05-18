@@ -1,4 +1,7 @@
 import { Canje } from './Canjes.js';
+import { Cliente } from '../Cliente/Cliente.js';
+import { Premio } from '../Premio/Premio.js';
+import { Sucursal } from '../Sucursal/Sucursal.js';
 
 
 // Crear un nuevo canje
@@ -30,11 +33,11 @@ export const getCanjeById = async (req, res) => {
         const canje = await Canje.findByPk(id, {
             include: [Cliente, Premio, Sucursal]
         });
-        if (!canje) {
+        if (canje) {
+            res.json(canje);
+        } else {
             res.status(404).json({ message: 'Canje no encontrado' });
-            return;
         }
-        res.json(canje);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
