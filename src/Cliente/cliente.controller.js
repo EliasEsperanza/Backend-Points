@@ -2,13 +2,13 @@ import { Cliente } from './Cliente.js';
 import { Usuario } from '../Usuario/Usuario.js';
 import {Venta} from '../Ventas/Ventas.js';
 import { sequelize } from "../database/database.js";
+import { Niveles } from '../Niveles/Niveles.js';
 import CryptoJS from 'crypto-js';
 import dotenv from 'dotenv';
 
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
 }
-
 
 export const getClientes = async (req, res) => {
     try {
