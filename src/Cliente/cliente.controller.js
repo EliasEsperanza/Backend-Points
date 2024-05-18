@@ -213,16 +213,25 @@ export const ObtenerVentas = async (req, res) =>{
             }
         });
 
+        const niveles = await Niveles.findAll();
         let nuevoNivel = null;
         // Obtener los niveles y verificar el nivel del usuario basado en los puntos
-        const niveles = await Niveles.findAll();
-
         
+        let nivelMaximo = null;
+
         niveles.forEach(nivel => {
             if (sumas >= nivel.puntosInicio && sumas <= nivel.puntosFin) {
                 nuevoNivel = nivel.idNivel;
             }
+            if (nivelMaximo === null || nivel.puntosFin > nivelMaximo.puntosFin) {
+                nivelMaximo = nivel;
+            }
         });
+
+        // Si no se encuentra un nivel adecuado, asignar el nivel máximo
+        if (nuevoNivel === null && sumas > nivelMaximo.puntosFin) {
+            nuevoNivel = nivelMaximo.idNivel;
+        }
 
         if (Usur) {
             await Usur.update({
@@ -242,8 +251,7 @@ export const ObtenerVentas = async (req, res) =>{
 
         res.json({
             message: 'puntos para canjear y su nivel actualiz',
-            count: sumas,
-            message: nuevoNivel
+            count: sumas, nuevoNivel
         });
     } catch (error) {
         res.status(500).json({
