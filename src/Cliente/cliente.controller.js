@@ -2,13 +2,13 @@ import { Cliente } from './Cliente.js';
 import { Usuario } from '../Usuario/Usuario.js';
 import {Venta} from '../Ventas/Ventas.js';
 import { sequelize } from "../database/database.js";
+import { Niveles } from '../Niveles/Niveles.js';
 import CryptoJS from 'crypto-js';
 import dotenv from 'dotenv';
 
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
 }
-
 
 export const getClientes = async (req, res) => {
     try {
@@ -205,20 +205,37 @@ export const ObtenerVentas = async (req, res) =>{
             }
         });
 
+        let nuevoNivel = null;
+        // Obtener los niveles y verificar el nivel del usuario basado en los puntos
+        const niveles = await Niveles.findAll();
+
+        
+        niveles.forEach(nivel => {
+            if (sumas >= nivel.puntosInicio && sumas <= nivel.puntosFin) {
+                nuevoNivel = nivel.idNivel;
+            }
+        });
+
         if (Usur) {
             await Usur.update({
                 puntos: sumas
             });
+            if (nuevoNivel !== null) {
+                await Usur.update({
+                    idNivel: nuevoNivel
+                });
+            }
         } else {
             // Manejo de error si no se encuentra el usuario
             res.json({
-                message: 'no se encontro usuario para agregar puntos para canjear',
+                message: 'no se encontro usuario para agregar puntos para canjear y actualizar nivel',
             });
         }
 
         res.json({
-            message: 'puntos para canjear',
-            count: sumas
+            message: 'puntos para canjear y su nivel actualiz',
+            count: sumas,
+            message: nuevoNivel
         });
     } catch (error) {
         res.status(500).json({
