@@ -13,7 +13,12 @@ import ventaRouter from './Ventas/ventas.routes.js';
 import loginRouter from './auth/login.routes.js';
 import promocionRouter from './Promocion/promocion.routes.js';
 
+import vendedorRouter from './vendedor/vendedor.routes.js';
+
+import admindRouter from './Admin/admin.routes.js';
 import puntosRouter from './routes/puntos.routes.js';
+
+import emailRouter from './email/email.js';
 
 const app = express();
 
@@ -32,5 +37,8 @@ app.use(sucursalRouter);
 app.use(ventaRouter);
 app.use(loginRouter);
 app.use(promocionRouter);
+app.use(vendedorRouter);
+app.use(admindRouter);
+app.use(emailRouter);
 
 export default app;

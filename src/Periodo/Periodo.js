@@ -8,21 +8,15 @@ export const Periodo = sequelize.define('tbl_periodo',{
         autoIncrement: true
     },
     fechaInicio:{
-        type:DataTypes.DATE
+        type:DataTypes.DATE,
+        allowNull:false
     },
     fechaFin:{
-        type:DataTypes.DATE
+        type:DataTypes.DATE,
+        allowNull:false
     },
     estado:{
-        type:DataTypes.TINYINT
+        type:DataTypes.TINYINT,
+        allowNull:false
     }
 },{timestamps: false,tableName: 'tbl_periodo'});
-
-/*
-{
-	"fechaInicio": "2024-05-10 12:30:00",//ingresa dato fecha
-	"fechaFin": "2024-05-11 12:30:00",
-	"estado":1 //ingresa dato TinyInt o booleano (porque no le escriben como booleano o algo parecido)
-}
-
-*/

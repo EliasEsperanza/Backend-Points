@@ -9,16 +9,20 @@ export const Niveles = sequelize.define('tbl_niveles',{
         autoIncrement: true
     },
     descripcion:{
-        type: DataTypes.STRING(300)
+        type: DataTypes.STRING(300),
+        allowNull: false
     },
     puntosInicio:{
-        type:DataTypes.INTEGER
+        type:DataTypes.INTEGER,
+        allowNull:false
     },
     puntosFin:{
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     icono:{
-        type: DataTypes.TEXT
+        type: DataTypes.TEXT,
+        allowNull: false
     }
 
 },{timestamps: false, tableName: 'tbl_niveles'});

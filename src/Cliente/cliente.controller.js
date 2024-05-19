@@ -1,35 +1,39 @@
 import { Cliente } from './Cliente.js';
 import { Usuario } from '../Usuario/Usuario.js';
-import argon2 from 'argon2';
 import {Venta} from '../Ventas/Ventas.js';
+import { sequelize } from "../database/database.js";
+import { Niveles } from '../Niveles/Niveles.js';
+import { Periodo } from '../Periodo/Periodo.js';
+import CryptoJS from 'crypto-js';
+import dotenv from 'dotenv';
 
-export const getClientes = async (req, res) => {
-    try {
-        const clientes = await Cliente.findAll();
-        res.json({
-            data: clientes
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    }
+
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
+        
+const hashData = async (data,secretKey) => {
+    return CryptoJS.AES.encrypt(data, secretKey || process.env.SECRET_KEY).toString();
 }
 
-const hashData = async (data) => {
-    return await argon2.hash(data);
+const decryptData = async (hash, secretKey) => {
+    const bytes = CryptoJS.AES.decrypt(hash, secretKey || process.env.SECRET_KEY);
+    return bytes.toString(CryptoJS.enc.Utf8);
 }
 
 export const createCliente = async (req, res) => {
+    const t = await sequelize.transaction();
     try {
+        
+
         const { nombreCliente, correo, telefono, direccion, dui, nit, nrc, idCategoriaCliente, idTipoCliente, passwordHash } = req.body;
 
-        const newPasswordHash = await hashData(passwordHash);
-        const newTelefonoHash = await hashData(telefono);
-        const newDireccionHash = await hashData(direccion);
-        const newDuiHash = await hashData(dui);
-        const newNitHash = await hashData(nit);
-        const newNrcHash = await hashData(nrc);
+        const newPasswordHash = await hashData(passwordHash, process.env.SECRET_KEY);
+        const newTelefonoHash = await hashData(telefono, process.env.SECRET_KEY);
+        const newDireccionHash = await hashData(direccion, process.env.SECRET_KEY);
+        const newDuiHash = await hashData(dui, process.env.SECRET_KEY);
+        const newNitHash = await hashData(nit, process.env.SECRET_KEY);
+        const newNrcHash = await hashData(nrc, process.env.SECRET_KEY);
 
 
         // Crear el cliente
@@ -43,7 +47,7 @@ export const createCliente = async (req, res) => {
             correo,
             idCategoriaCliente,
             idTipoCliente
-        });
+        },{ transaction: t });
 
         // Si el cliente se creó exitosamente, crear el usuario asociado
         if (newCliente) {
@@ -52,8 +56,10 @@ export const createCliente = async (req, res) => {
                 correo,
                 passwordHash: newPasswordHash,
                 idCliente: newCliente.idCliente
-            });
+            },{ transaction: t });
 
+
+            await t.commit();
             // Si el usuario se creó exitosamente, responder con éxito
             if (usuario) {
                 res.json({
@@ -68,10 +74,33 @@ export const createCliente = async (req, res) => {
             }
         } else {
             // Si no se pudo crear el cliente, responder con un error
+            
             res.status(500).json({
                 message: 'Error al crear el cliente'
             });
         }
+    } catch (error) {
+        await t.rollback();
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+export const getClientes = async (req, res) => {
+    try {
+        const clientes = await Cliente.findAll();
+        const decryptedClientes = await Promise.all(clientes.map(async cliente => {
+            return {
+                ...cliente.dataValues,
+                dui: await decryptData(cliente.dui, process.env.SECRET_KEY),
+                nit: await decryptData(cliente.nit, process.env.SECRET_KEY),
+                nrc: await decryptData(cliente.nrc, process.env.SECRET_KEY),
+                telefono: await decryptData(cliente.telefono, process.env.SECRET_KEY),
+                direccion: await decryptData(cliente.direccion, process.env.SECRET_KEY)
+            };
+        }));
+        res.json({ data: decryptedClientes });
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -87,15 +116,28 @@ export const getClienteById = async (req, res) => {
                 idCliente: id
             }
         });
-        res.json({
-            data: cliente
-        });
+
+        if (!cliente) {
+            return res.status(404).json({ message: "Cliente no encontrado" });
+        }
+
+        // Desencriptar los datos necesarios
+        const decryptedCliente = {
+            ...cliente.dataValues,
+            dui: await decryptData(cliente.dui, process.env.SECRET_KEY),
+            nit: await decryptData(cliente.nit, process.env.SECRET_KEY),
+            nrc: await decryptData(cliente.nrc, process.env.SECRET_KEY),
+            telefono: await decryptData(cliente.telefono, process.env.SECRET_KEY),
+            direccion: await decryptData(cliente.direccion, process.env.SECRET_KEY),
+        };
+
+        res.json({ data: decryptedCliente });
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        console.error("Error al obtener cliente por ID:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
     }
 }
+
 
 export const updateCliente = async (req, res) => {
     try {
@@ -160,12 +202,37 @@ export const ObtenerVentas = async (req, res) =>{
                 idCliente: id
             }
         });
-        let sumas = 0;
-        ventas.forEach(element => {
-            if (element.puntosGanados !== undefined) {
-                sumas += element.puntosGanados || 0;
+
+        // Obtener los idPeriodo únicos de las ventas
+        const idPeriodos = [...new Set(ventas.map(venta => venta.idPeriodo))];
+
+        // Obtener todos los períodos activos que están siendo referenciados por las ventas
+        const periodos = await Periodo.findAll({
+            where: {
+                estado: 1,
+                idPeriodo: idPeriodos
             }
-            
+        });
+
+        function toDateOnly(date) {
+            const d = new Date(date);
+            return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        }
+
+        // Sumar los puntos ganados en las ventas dentro de los períodos activos
+        let sumas = 0;
+        ventas.forEach(venta => {
+            periodos.forEach(periodo => {
+                const fechaVenta = toDateOnly(venta.fechaVenta);
+                const fechaInicio = toDateOnly(periodo.fechaInicio);
+                const fechaFin = toDateOnly(periodo.fechaFin);
+                
+                if (venta.puntosGanados !== undefined && 
+                    fechaVenta >= fechaInicio && 
+                    fechaVenta <= fechaFin) {
+                    sumas += venta.puntosGanados || 0;
+                }
+            });
         });
         const Usur = await Usuario.findOne({
             where:{
@@ -173,20 +240,45 @@ export const ObtenerVentas = async (req, res) =>{
             }
         });
 
+        const niveles = await Niveles.findAll();
+        let nuevoNivel = null;
+        // Obtener los niveles y verificar el nivel del usuario basado en los puntos
+        
+        let nivelMaximo = null;
+
+        niveles.forEach(nivel => {
+            if (sumas >= nivel.puntosInicio && sumas <= nivel.puntosFin) {
+                nuevoNivel = nivel.idNivel;
+            }
+            if (nivelMaximo === null || nivel.puntosFin > nivelMaximo.puntosFin) {
+                nivelMaximo = nivel;
+            }
+        });
+
+        // Si no se encuentra un nivel adecuado, asignar el nivel máximo
+        if (nuevoNivel === null && sumas > nivelMaximo.puntosFin) {
+            nuevoNivel = nivelMaximo.idNivel;
+        }
+
         if (Usur) {
             await Usur.update({
                 puntos: sumas
             });
+            if (nuevoNivel !== null) {
+                await Usur.update({
+                    idNivel: nuevoNivel
+                });
+            }
         } else {
             // Manejo de error si no se encuentra el usuario
             res.json({
-                message: 'no se encontro usuario para agregar puntos para canjear',
+                message: 'no se encontro usuario para agregar puntos para canjear y actualizar nivel',
             });
         }
 
         res.json({
-            message: 'puntos para canjear',
-            count: sumas
+            message: 'puntos para canjear y su nivel actualiz',
+            count: sumas, nuevoNivel
         });
     } catch (error) {
         res.status(500).json({
