@@ -10,8 +10,10 @@ const databaseName = process.env.DB_NAME;
 const databaseUser = process.env.DB_USER;
 const databaseHost = process.env.DB_HOST;
 const databaseDialect = process.env.DB_DIALECT;
+const databasePort =  process.env.DB_PORT;
 
 export const sequelize = new Sequelize(databaseName, databaseUser, "", {
     host: databaseHost,
+    port: databasePort,
     dialect: databaseDialect
 })
