@@ -6,7 +6,9 @@ import dotenv from 'dotenv';
 import { Cliente } from "../Cliente/Cliente.js";
 import { Venta } from "../Ventas/Ventas.js";   
 
-dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
 
 export const crearCanje = async (req, res) => {
     try {

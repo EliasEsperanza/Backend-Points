@@ -3,7 +3,9 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { Premio } from "../../Premio/Premio.js";
 
-dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
 
 //Quiero que el pueda crear premios si este tiene el token activo
 

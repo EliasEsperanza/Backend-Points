@@ -1,7 +1,9 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
-dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
 
 export const enviarMensaje = async (req,res) => {
     const {email, asunto, mensaje} = req.body;
