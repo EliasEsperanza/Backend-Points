@@ -1,6 +1,6 @@
 import { Usuario as UsuarioCliente } from "../Usuario/Usuario.js";
 import { UsuarioVendedor } from "../vendedor/usuarioVendedor/UsuarioVendedor.js";
-import { UsuarioAdmin } from "../admin/usuarioAdmin/UsuarioAdmin.js";
+import { UsuarioAdmin } from "../Admin/UsuarioAdmin/UsuarioAdmin.js";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import CryptoJS from 'crypto-js';
