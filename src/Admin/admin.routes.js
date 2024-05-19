@@ -1,6 +1,7 @@
 import {Router} from 'express';
 import { createAdmin, getAllAdmins, getAdminById, deleteAdmin, updateAdmin} from './Admin.controller.js';
 
+
 const router = Router();
 
 // Rutas para los administradores
