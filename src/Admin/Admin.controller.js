@@ -125,7 +125,12 @@ export const updateAdmin = async (req, res) => {
     try {
         const admin = await Admin.findByPk(adminId);
         if (admin) {
-            await admin.update(updatedData);
+            // Encriptar los datos actualizados
+            const encryptedData = {};
+            for (const key in updatedData) {
+                encryptedData[key] = await hashData(updatedData[key], process.env.SECRET_KEY);
+            }
+            await admin.update(encryptedData);
             return res.json(admin);
         } else {
             return res.status(404).json({ message: 'Administrador no encontrado' });
@@ -137,17 +142,17 @@ export const updateAdmin = async (req, res) => {
 
 // Controlador para eliminar un administrador por su ID
 export const deleteAdmin = async (req, res) => {
-    const adminId = req.params.id;
+    const { id } = req.params;
+    const t = await sequelize.transaction();
+    try{
+        await UsuarioAdmin.destroy({ where: { idAdmin: id } }, { transaction: t });
 
-    try {
-        const admin = await Admin.findByPk(adminId);
-        if (admin) {
-            await admin.destroy();
-            return res.json({ message: 'Administrador eliminado exitosamente' });
-        } else {
-            return res.status(404).json({ message: 'Administrador no encontrado' });
-        }
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
+        const deleteAdmin = await Admin.destroy({ where: { idAdmin: id } }, { transaction: t });
+        await t.commit();
+        res.json({ message: 'Administrador eliminado' });
+
+    }catch(error){
+        await t.rollback();
+        res.status(500).json({ message: error.message });
     }
 };
