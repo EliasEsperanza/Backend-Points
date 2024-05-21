@@ -223,9 +223,12 @@ export const ObtenerVentas = async (req, res) =>{
                 idCliente: id
             }
         });
-
+        let idPeriodos =[];
+        
         // Obtener los idPeriodo únicos de las ventas
-        const idPeriodos = [...new Set(ventas.map(venta => venta.idPeriodo))];
+        if(ventas && ventas.length >0){
+            idPeriodos = [...new Set(ventas.map(venta => venta.idPeriodo))];
+        }
 
         // Obtener todos los períodos activos que están siendo referenciados por las ventas
         const periodos = await Periodo.findAll({
@@ -242,7 +245,7 @@ export const ObtenerVentas = async (req, res) =>{
 
         // Sumar los puntos ganados en las ventas dentro de los períodos activos
         let sumas = 0;
-        ventas.forEach(venta => {
+        for(const venta of ventas){
             periodos.forEach(periodo => {
                 const fechaVenta = toDateOnly(venta.fechaVenta);
                 const fechaInicio = toDateOnly(periodo.fechaInicio);
@@ -254,7 +257,8 @@ export const ObtenerVentas = async (req, res) =>{
                     sumas += venta.puntosGanados || 0;
                 }
             });
-        });
+        }
+    
         const Usur = await Usuario.findOne({
             where:{
                 idCliente: id
@@ -281,7 +285,15 @@ export const ObtenerVentas = async (req, res) =>{
             nuevoNivel = nivelMaximo.idNivel;
         }
 
-        if (Usur) {
+        if (!Usur) {
+
+            // Manejo de error si no se encuentra el usuario
+            res.json({
+                message: 'no se encontro usuario para agregar puntos para canjear y actualizar nivel',
+            });
+
+            
+        } else {
             await Usur.update({
                 puntos: sumas
             });
@@ -290,17 +302,13 @@ export const ObtenerVentas = async (req, res) =>{
                     idNivel: nuevoNivel
                 });
             }
-        } else {
-            // Manejo de error si no se encuentra el usuario
             res.json({
-                message: 'no se encontro usuario para agregar puntos para canjear y actualizar nivel',
+                message: 'puntos para canjear y su nivel actualiz',
+                count: sumas, nuevoNivel
             });
         }
 
-        res.json({
-            message: 'puntos para canjear y su nivel actualiz',
-            count: sumas, nuevoNivel
-        });
+        
     } catch (error) {
         res.status(500).json({
             message: error.message
