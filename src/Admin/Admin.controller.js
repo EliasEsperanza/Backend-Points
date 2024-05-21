@@ -115,12 +115,7 @@ export const getAdminById = async (req, res) => {
 export const updateAdmin = async (req, res) => {
     const adminId = req.params.id;
     const updatedData = req.body;
-
-    // Validar los datos de entrada
-    const validationErrors = validateAdminData(updatedData);
-    if (validationErrors.length > 0) {
-        return res.status(400).json({ message: 'Error de validación', errors: validationErrors });
-    }
+    const t = await sequelize.transaction();
 
     try {
         const admin = await Admin.findByPk(adminId);
@@ -130,12 +125,14 @@ export const updateAdmin = async (req, res) => {
             for (const key in updatedData) {
                 encryptedData[key] = await hashData(updatedData[key], process.env.SECRET_KEY);
             }
-            await admin.update(encryptedData);
-            return res.json(admin);
+            const updatedAdmin = await admin.update(encryptedData, { transaction: t });
+            await t.commit();
+            return res.json(updatedAdmin);
         } else {
             return res.status(404).json({ message: 'Administrador no encontrado' });
         }
     } catch (error) {
+        await t.rollback();
         return res.status(500).json({ message: error.message });
     }
 };
