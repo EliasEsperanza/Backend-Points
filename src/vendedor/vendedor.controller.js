@@ -98,25 +98,19 @@ export const getVendedorById = async (req, res) => {
 export const updateVendedor = async (req, res) => {
     try {
         const { id } = req.params;
-        const { nombreVendedor, correo, telefono, direccion, dui, nit, nrc, idSucursal } = req.body;
-        const vendedor = await Vendedor.findOne({
+        const { nombreVendedor, correo, imagenVendedor,idSucursal } = req.body;
+        await Vendedor.update({
+            nombreVendedor,
+            correo,
+            imagenVendedor,
+            idSucursal
+        }, {
             where: {
                 idVendedor: id
             }
         });
-        await vendedor.update({
-            nombreVendedor,
-            correo,
-            telefono,
-            direccion,
-            dui,
-            nit,
-            nrc,
-            idSucursal
-        });
         res.json({
-            message: 'Vendedor actualizado exitosamente',
-            data: vendedor
+            message: 'Vendedor actualizado exitosamente'
         });
     } catch (error) {
         res.status(500).json({
@@ -126,17 +120,26 @@ export const updateVendedor = async (req, res) => {
 }
 
 export const deleteVendedor = async (req, res) => {
-    try {
-        const { id } = req.params;
-        await Vendedor.destroy({
+    try{
+        const {id} = req.params;
+        const t = await sequelize.transaction();
+        await UsuarioVendedor.destroy({
             where: {
                 idVendedor: id
             }
-        });
+        }, { transaction: t });
+        const deleteVendedor = await Vendedor.destroy({
+            where: {
+                idVendedor: id
+            }
+        }, { transaction: t });
+        await t.commit();
         res.json({
-            message: 'Vendedor eliminado exitosamente'
+            message: 'Vendedor eliminado exitosamente',
+            data: deleteVendedor
         });
-    } catch (error) {
+
+    }catch(error){
         res.status(500).json({
             message: error.message
         });

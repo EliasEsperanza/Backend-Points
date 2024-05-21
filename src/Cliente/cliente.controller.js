@@ -143,6 +143,11 @@ export const updateCliente = async (req, res) => {
     try {
         const { id } = req.params;
         const { nombreCliente, correo, telefono, direccion, dui, nit, nrc, idCategoriaCliente, idTipoCliente } = req.body;
+        const newTelefonoHash = await hashData(telefono, process.env.SECRET_KEY);
+        const newDireccionHash = await hashData(direccion, process.env.SECRET_KEY);
+        const newDuiHash = await hashData(dui, process.env.SECRET_KEY);
+        const newNitHash = await hashData(nit, process.env.SECRET_KEY);
+        const newNrcHash = await hashData(nrc, process.env.SECRET_KEY);
         const cliente = await Cliente.findOne({
             where: {
                 idCliente: id
@@ -150,11 +155,11 @@ export const updateCliente = async (req, res) => {
         });
         await cliente.update({
             nombreCliente,
-            dui,
-            nit,
-            nrc,
-            telefono,
-            direccion,
+            dui: newDuiHash,
+            nit: newNitHash,
+            nrc: newNrcHash,
+            telefono: newTelefonoHash,
+            direccion: newDireccionHash,
             correo,
             idCategoriaCliente,
             idTipoCliente
@@ -173,15 +178,31 @@ export const updateCliente = async (req, res) => {
 export const deleteCliente = async (req, res) => {
     try {
         const { id } = req.params;
-        const deleteRowCount = await Cliente.destroy({
-            where: {
-                idCliente: id
-            }
-        });
-        res.json({
-            message: 'Cliente eliminado exitosamente',
-            count: deleteRowCount
-        });
+        const t = await sequelize.transaction();
+        try {
+            // Eliminar el usuario asociado al cliente
+            await Usuario.destroy({
+                where: {
+                    idCliente: id
+                },
+                transaction: t
+            });
+            // Eliminar el cliente
+            const deleteRowCount = await Cliente.destroy({
+                where: {
+                    idCliente: id
+                },
+                transaction: t
+            });
+            await t.commit();
+            res.json({
+                message: 'Cliente eliminado exitosamente',
+                count: deleteRowCount
+            });
+        } catch (error) {
+            await t.rollback();
+            throw error;
+        }
     } catch (error) {
         res.status(500).json({
             message: error.message
