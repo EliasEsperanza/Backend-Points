@@ -6,6 +6,8 @@ import { Niveles } from '../Niveles/Niveles.js';
 import { Periodo } from '../Periodo/Periodo.js';
 import CryptoJS from 'crypto-js';
 import dotenv from 'dotenv';
+import { Canje } from '../Canjes/Canjes.js';
+
 
 
 if (process.env.NODE_ENV !== 'production') {
@@ -238,6 +240,12 @@ export const ObtenerVentas = async (req, res) =>{
             }
         });
 
+        const canjes = await Canje.findAll({
+            where:{
+                idCliente: id
+            }
+        });
+
         function toDateOnly(date) {
             const d = new Date(date);
             return new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -285,6 +293,15 @@ export const ObtenerVentas = async (req, res) =>{
             nuevoNivel = nivelMaximo.idNivel;
         }
 
+        //Aqui se descuenta los puntos de cada cliente con respecto a lo canje dirigido a cada cliente(Recuerda hacerlo igual con lo de obtenerVentas2 en Ventas xD)
+        let puntosCanjeados = 0;
+        if (canjes && canjes.length > 0) {
+            for(const item of canjes){
+                puntosCanjeados += item.puntosCanjeados;
+            }
+        }
+        const puntosFinales = sumas - puntosCanjeados;
+
         if (!Usur) {
 
             // Manejo de error si no se encuentra el usuario
@@ -295,7 +312,7 @@ export const ObtenerVentas = async (req, res) =>{
             
         } else {
             await Usur.update({
-                puntos: sumas
+                puntos: puntosFinales
             });
             if (nuevoNivel !== null) {
                 await Usur.update({
