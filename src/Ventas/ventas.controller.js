@@ -86,91 +86,111 @@ export const deleteVenta = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-export const GetVentas2 = async(req,res)=>{
+export const GetVentas2 = async (req, res) => {
     try {
-
         const usuarios = await Usuario.findAll();
         const niveles = await Niveles.findAll();
-        const ventas = await Venta.findAll();
-        const periodos = await Periodo.findAll({
-            where: {
-                estado: 1
-            }
-        });
-        
 
         function toDateOnly(date) {
             const d = new Date(date);
             return new Date(d.getFullYear(), d.getMonth(), d.getDate());
         }
 
-        for (const Usur of usuarios){
+        for (const Usur of usuarios) {
+            const ventas = await Venta.findAll({
+                where: {
+                    idCliente: Usur.idCliente
+                }
+            });
+
+            // Obtener los idPeriodo únicos de las ventas
+            let idPeriodos = [];
+            if (ventas && ventas.length > 0) {
+                idPeriodos = [...new Set(ventas.map(venta => venta.idPeriodo))];
+            }
+
+            // Obtener todos los períodos activos que están siendo referenciados por las ventas
+            const periodos = await Periodo.findAll({
+                where: {
+                    estado: 1,
+                    idPeriodo: idPeriodos
+                }
+            });
+
+            const canjes = await Canje.findAll({
+                where: {
+                    idCliente: Usur.idCliente
+                }
+            });
+
+            // Sumar los puntos ganados en las ventas dentro de los períodos activos
             let sumas = 0;
-            // Filtrar ventas del usuario actual
-            const ventasUsuario = ventas.filter(venta => venta.idCliente === Usur.idCliente);
-
-
-            for (const venta of ventasUsuario) {
-                for (const periodo of periodos) {
+            for (const venta of ventas) {
+                periodos.forEach(periodo => {
                     const fechaVenta = toDateOnly(venta.fechaVenta);
                     const fechaInicio = toDateOnly(periodo.fechaInicio);
                     const fechaFin = toDateOnly(periodo.fechaFin);
 
-                    if (venta.puntosGanados !== undefined && 
-                        fechaVenta >= fechaInicio && 
+                    if (venta.puntosGanados !== undefined &&
+                        fechaVenta >= fechaInicio &&
                         fechaVenta <= fechaFin) {
                         sumas += venta.puntosGanados || 0;
                     }
-                }
+                });
             }
 
-            
-            // Determinar el nivel del usuario basado en los puntos
             let nuevoNivel = null;
             let nivelMaximo = null;
 
-            for (const nivel of niveles) {
+            niveles.forEach(nivel => {
                 if (sumas >= nivel.puntosInicio && sumas <= nivel.puntosFin) {
                     nuevoNivel = nivel.idNivel;
                 }
                 if (nivelMaximo === null || nivel.puntosFin > nivelMaximo.puntosFin) {
                     nivelMaximo = nivel;
                 }
-            }
+            });
 
             // Si no se encuentra un nivel adecuado, asignar el nivel máximo
             if (nuevoNivel === null && sumas > nivelMaximo.puntosFin) {
                 nuevoNivel = nivelMaximo.idNivel;
             }
 
-            if (Usur) {
+            // Actualizar puntos y nivel del usuario
+            await Usur.update({
+                puntos: sumas
+            });
+
+            if (nuevoNivel !== null) {
                 await Usur.update({
-                    puntos: sumas
-                });
-                if (nuevoNivel !== null) {
-                    await Usur.update({
-                        idNivel: nuevoNivel
-                    });
-                }
-            } else {
-                // Manejo de error si no se encuentra el usuario
-                res.json({
-                    message: 'no se encontro usuario para agregar puntos para canjear y actualizar nivel',
+                    idNivel: nuevoNivel
                 });
             }
+
+            // Calcular puntos canjeados
+            let puntosCanjeados = 0;
+            if (canjes && canjes.length > 0) {
+                for(const item of canjes){
+                    puntosCanjeados += item.puntosCanjeados;
+                }
+            }
+
+            // Descontar los puntos canjeados de los puntos del usuario
+            const puntosFinales = sumas - puntosCanjeados;
+            await Usur.update({
+                puntos: puntosFinales
+            });
         }
 
-        const Nusuarios = await Usuario.findAll();
+        const usuariosActualizados = await Usuario.findAll();
 
         res.json({
-            message: 'puntos para canjear y su nivel actualiz',
-            Nusuarios
+            message: 'puntos para canjear y su nivel actualizados para todos los usuarios',
+            usuarios: usuariosActualizados
         });
     } catch (error) {
         res.status(500).json({
             message: error.message
         });
     }
-    
 };
-
