@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import clienteRoutes from './Cliente/cliente.routes.js';
 import categoriaClienteRoutes from './CategoriaCliente/categoriaCliente.routes.js';
 import tipoClienteRoutes from './TipoCliente/tipoCliente.routes.js';
@@ -20,8 +21,15 @@ import puntosRouter from './routes/puntos.routes.js';
 
 import emailRouter from './email/email.js';
 
+const corsOptions = {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}
+
 const app = express();
 
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(clienteRoutes);
 app.use(puntosRouter);
