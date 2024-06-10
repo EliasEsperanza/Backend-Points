@@ -16,5 +16,5 @@ const databasePassword = process.env.DB_PASS;
 export const sequelize = new Sequelize(databaseName, databaseUser, databasePassword, {
     host: databaseHost,
     port: databasePort,
-    dialect: databaseDialect
+    dialect: 'mysql'
 })
