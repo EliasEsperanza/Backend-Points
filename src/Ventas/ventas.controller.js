@@ -2,6 +2,7 @@ import { Venta } from './Ventas.js';
 import { Periodo } from '../Periodo/Periodo.js';
 import { Usuario } from '../Usuario/Usuario.js';
 import { Niveles } from '../Niveles/Niveles.js';
+import { Canje} from '../Canjes/Canjes.js';
 // Crear una nueva venta
 export const createVenta = async (req, res,next) => {
     try {
