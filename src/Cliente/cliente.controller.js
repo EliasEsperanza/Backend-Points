@@ -133,6 +133,18 @@ export const getClienteById = async (req, res) => {
             direccion: await decryptData(cliente.direccion, process.env.SECRET_KEY),
         };
 
+        // Obtener el usuario asociado al cliente
+        const usuario = await Usuario.findOne({
+            where: {
+                idCliente: id
+            }
+        });
+
+        if (usuario) {
+            // Desencriptar la contraseña del usuario
+            decryptedCliente.password = await decryptData(usuario.passwordHash, process.env.SECRET_KEY);
+        }
+
         res.json({ data: decryptedCliente });
     } catch (error) {
         console.error("Error al obtener cliente por ID:", error);
