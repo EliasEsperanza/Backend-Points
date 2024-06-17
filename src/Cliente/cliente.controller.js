@@ -23,6 +23,10 @@ const decryptData = async (hash, secretKey) => {
     return bytes.toString(CryptoJS.enc.Utf8);
 }
 
+const compareData = async (data, hash, secretKey) => {
+    return data === await decryptData(hash, secretKey || process.env.SECRET_KEY);
+}
+
 export const createCliente = async (req, res) => {
     const t = await sequelize.transaction();
     try {
@@ -357,40 +361,35 @@ export const ObtenerVentas = async (req, res) =>{
 export const getClienteByDui = async (req, res) => {
     try {
         const { dui } = req.params;
-        const cliente = await Cliente.findOne({
-            where: {
-                dui
-            }
-        });
 
-        if (!cliente) {
+        const clientes = await Cliente.findAll();
+
+        // Buscar el cliente con el DUI desencriptado
+        let matchedCliente = null;
+        for (const cliente of clientes) {
+            const decryptedDui = await decryptData(cliente.dui, process.env.SECRET_KEY);
+            if (decryptedDui === dui) {
+                matchedCliente = cliente;
+                break;
+            }
+        }
+
+        if (!matchedCliente) {
             return res.status(404).json({ message: "Cliente no encontrado" });
         }
-
     
         const decryptedCliente = {
-            ...cliente.dataValues,
-            dui: await decryptData(cliente.dui, process.env.SECRET_KEY),
-            nit: await decryptData(cliente.nit, process.env.SECRET_KEY),
-            nrc: await decryptData(cliente.nrc, process.env.SECRET_KEY),
-            telefono: await decryptData(cliente.telefono, process.env.SECRET_KEY),
-            direccion: await decryptData(cliente.direccion, process.env.SECRET_KEY),
+            ...matchedCliente.dataValues,
+            dui: dui,
+            nit: await decryptData(matchedCliente.nit, process.env.SECRET_KEY),
+            nrc: await decryptData(matchedCliente.nrc, process.env.SECRET_KEY),
+            telefono: await decryptData(matchedCliente.telefono, process.env.SECRET_KEY),
+            direccion: await decryptData(matchedCliente.direccion, process.env.SECRET_KEY)
         };
-
-        const usuario = await Usuario.findOne({
-            where: {
-                idCliente: cliente.idCliente
-            }
-        });
-
-        if (usuario) {
-        
-            decryptedCliente.password = await decryptData(usuario.passwordHash, process.env.SECRET_KEY);
-        }
 
         res.json({ data: decryptedCliente });
     } catch (error) {
-        console.error("Error al obtener cliente por DUI:", error);
-        res.status(500).json({ message: "Error interno del servidor" });
+        res.status(500).json({ message: error.message });
     }
 }
+

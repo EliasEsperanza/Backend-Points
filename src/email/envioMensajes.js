@@ -20,7 +20,7 @@ export const enviarMensaje = async (req,res) => {
             from: process.env.EMAIL_USER,
             to: email,
             subject: asunto,
-            text: mensaje
+            text: mensaje,
         });
         console.log('Mensaje enviado: %s', info.messageId);
         res.json({
