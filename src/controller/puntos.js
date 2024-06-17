@@ -79,12 +79,26 @@ export const crearCanje = async (req, res) => {
 
 export const crearCanjebyIdSinToken = async (req, res) => {
     try {
-        const { idPremio, idCliente } = req.body;
+        const { idPremio, idUsuario } = req.body;
 
-        // Buscar el cliente con el id proporcionado
+        // Buscar el usuario con el id proporcionado
+        const usuario = await Usuario.findOne({
+            where: {
+                idUsuario
+            }
+        });
+
+        // Validar si el usuario existe
+        if (!usuario) {
+            return res.status(404).json({
+                message: 'Usuario no encontrado'
+            });
+        }
+
+        // Buscar el cliente asociado al usuario
         const cliente = await Cliente.findOne({
             where: {
-                idCliente
+                idCliente: usuario.idCliente
             }
         });
 
@@ -98,7 +112,7 @@ export const crearCanjebyIdSinToken = async (req, res) => {
         // Buscar la venta asociada al cliente
         const venta = await Venta.findOne({
             where: {
-                idCliente
+                idCliente: usuario.idCliente
             }
         });
 
@@ -123,15 +137,15 @@ export const crearCanjebyIdSinToken = async (req, res) => {
             });
         }
 
-        // Validar si el cliente tiene suficientes puntos para el premio
-        if (cliente.puntos < premio.puntos) {
+        // Validar si el usuario tiene suficientes puntos para el premio
+        if (usuario.puntos < premio.puntos) {
             return res.status(400).json({
                 message: 'Puntos insuficientes'
             });
         }
 
-        // Validar si el nivel del cliente es el adecuado para el premio
-        if (cliente.idNivel !== premio.idNivel) {
+        // Validar si el nivel del usuario es el adecuado para el premio
+        if (usuario.idNivel != premio.idNivel) {
             return res.status(400).json({
                 message: 'Nivel incorrecto'
             });
@@ -142,9 +156,9 @@ export const crearCanjebyIdSinToken = async (req, res) => {
 
         // Crear el canje
         const canje = await Canje.create({
-            idUsuario: null,
+            idUsuario: usuario.idUsuario,
             idPremio,
-            idCliente,
+            idCliente: usuario.idCliente,
             idSucursal: venta.idSucursal,
             puntosCanjeados: premio.puntos,
             fechaCanje: new Date(),
@@ -152,9 +166,9 @@ export const crearCanjebyIdSinToken = async (req, res) => {
             costo
         });
 
-        // Actualizar los puntos del cliente después del canje
-        await cliente.update({
-            puntos: cliente.puntos - premio.puntos
+        // Actualizar los puntos del usuario después del canje
+        await usuario.update({
+            puntos: usuario.puntos - premio.puntos
         });
 
         // Enviar respuesta exitosa
