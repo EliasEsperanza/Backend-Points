@@ -4,7 +4,7 @@ import { Canje } from "../Canjes/Canjes.js";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { Cliente } from "../Cliente/Cliente.js";
-import { Venta } from "../Ventas/Ventas.js";   
+import { Venta } from "../Ventas/Ventas.js";
 
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
@@ -71,6 +71,99 @@ export const crearCanje = async (req, res) => {
             data: canje
         });
     } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+export const crearCanjebyIdSinToken = async (req, res) => {
+    try {
+        const { idPremio, idCliente } = req.body;
+
+        // Buscar el cliente con el id proporcionado
+        const cliente = await Cliente.findOne({
+            where: {
+                idCliente
+            }
+        });
+
+        // Validar si el cliente existe
+        if (!cliente) {
+            return res.status(404).json({
+                message: 'Cliente no encontrado'
+            });
+        }
+
+        // Buscar la venta asociada al cliente
+        const venta = await Venta.findOne({
+            where: {
+                idCliente
+            }
+        });
+
+        // Validar si la venta asociada al cliente existe
+        if (!venta) {
+            return res.status(404).json({
+                message: 'No se encontró una venta asociada al cliente'
+            });
+        }
+
+        // Buscar el premio por el idPremio proporcionado
+        const premio = await Premio.findOne({
+            where: {
+                idPremio
+            }
+        });
+
+        // Validar si el premio existe
+        if (!premio) {
+            return res.status(404).json({
+                message: 'Premio no encontrado'
+            });
+        }
+
+        // Validar si el cliente tiene suficientes puntos para el premio
+        if (cliente.puntos < premio.puntos) {
+            return res.status(400).json({
+                message: 'Puntos insuficientes'
+            });
+        }
+
+        // Validar si el nivel del cliente es el adecuado para el premio
+        if (cliente.idNivel !== premio.idNivel) {
+            return res.status(400).json({
+                message: 'Nivel incorrecto'
+            });
+        }
+
+        // Calcular el costo del premio
+        let costo = premio.puntos / 0.2;
+
+        // Crear el canje
+        const canje = await Canje.create({
+            idUsuario: null,
+            idPremio,
+            idCliente,
+            idSucursal: venta.idSucursal,
+            puntosCanjeados: premio.puntos,
+            fechaCanje: new Date(),
+            nombreCliente: cliente.nombreCliente,
+            costo
+        });
+
+        // Actualizar los puntos del cliente después del canje
+        await cliente.update({
+            puntos: cliente.puntos - premio.puntos
+        });
+
+        // Enviar respuesta exitosa
+        res.json({
+            message: 'Canje realizado exitosamente',
+            data: canje
+        });
+    } catch (error) {
+        // Manejo de errores
         res.status(500).json({
             message: error.message
         });
