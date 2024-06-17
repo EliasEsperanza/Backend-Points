@@ -1,4 +1,5 @@
 import { Premio } from './Premio.js';
+import { Niveles } from '../Niveles/Niveles.js';
 
 // Crear un nuevo premio
 export const createPremio = async (req, res) => {
@@ -77,14 +78,15 @@ export const deletePremio = async (req, res) => {
 };
 
 export const getPremioByNivel = async (req, res) => {
-    const { id } = req.params;
+    const {id} = req.params;
     try {
-        const premio = await Premio.findAll({
-            where: {
-                idNivel: id
-            }
-        });
-        res.json(premio);
+        const premios = await Premio.findAll()
+        const premiosNivel = premios.filter(premio => premio.idNivel == id);
+        if (!premiosNivel) {
+            res.status(404).json({ message: 'Premio no encontrado' });
+            return;
+        }
+        res.json(premiosNivel);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
