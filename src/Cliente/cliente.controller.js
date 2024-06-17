@@ -353,3 +353,44 @@ export const ObtenerVentas = async (req, res) =>{
         });
     }
 }
+
+export const getClienteByDui = async (req, res) => {
+    try {
+        const { dui } = req.params;
+        const cliente = await Cliente.findOne({
+            where: {
+                dui
+            }
+        });
+
+        if (!cliente) {
+            return res.status(404).json({ message: "Cliente no encontrado" });
+        }
+
+    
+        const decryptedCliente = {
+            ...cliente.dataValues,
+            dui: await decryptData(cliente.dui, process.env.SECRET_KEY),
+            nit: await decryptData(cliente.nit, process.env.SECRET_KEY),
+            nrc: await decryptData(cliente.nrc, process.env.SECRET_KEY),
+            telefono: await decryptData(cliente.telefono, process.env.SECRET_KEY),
+            direccion: await decryptData(cliente.direccion, process.env.SECRET_KEY),
+        };
+
+        const usuario = await Usuario.findOne({
+            where: {
+                idCliente: cliente.idCliente
+            }
+        });
+
+        if (usuario) {
+        
+            decryptedCliente.password = await decryptData(usuario.passwordHash, process.env.SECRET_KEY);
+        }
+
+        res.json({ data: decryptedCliente });
+    } catch (error) {
+        console.error("Error al obtener cliente por DUI:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+}
