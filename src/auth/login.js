@@ -45,9 +45,9 @@ const compareHashedData = async (data, encryptedData) => {
 
 export const login = async (req, res) => {
     try {
-        const { correo, usuario, password } = req.body;
+        const { correo, usuario, password, userType } = req.body;
 
-        if (correo) {
+        if (userType == "cliente" && correo) {
             // Usuario cliente
             const usuarioCliente = await UsuarioCliente.findOne({ where: { correo } });
 
@@ -79,7 +79,7 @@ export const login = async (req, res) => {
                 token
             });
 
-        } else if (usuario) {
+        } else if (userType != "cliente" && usuario) {
             // Usuario vendedor o admin
             let usuarioVendedor = await UsuarioVendedor.findOne({ where: { usuario } });
             let usuarioAdmin = await UsuarioAdmin.findOne({ where: { usuario } });
