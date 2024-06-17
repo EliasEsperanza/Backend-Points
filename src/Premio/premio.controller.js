@@ -75,3 +75,17 @@ export const deletePremio = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+export const getPremioByNivel = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const premio = await Premio.findAll({
+            where: {
+                idNivel: id
+            }
+        });
+        res.json(premio);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
