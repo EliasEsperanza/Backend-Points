@@ -10,8 +10,8 @@ router.get('/admin', getAllAdmins);
 router.get('/admin/:id', getAdminById);
 router.put('/admin/:id', updateAdmin);
 router.delete('/admin/:id', deleteAdmin);
-router.get('/admin/user', getAllUserAdmin);
-router.get('/admin/user/:id', getUserAdminById);
-router.post('/admin/user/:id', updateUserAdmin);
+router.get('/adminUser', getAllUserAdmin);
+router.get('/adminUser/:id', getUserAdminById);
+router.post('/adminUser/:id', updateUserAdmin);
 
 export default router;
