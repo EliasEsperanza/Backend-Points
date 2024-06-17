@@ -6,7 +6,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const enviarMensaje = async (req,res) => {
-    const {email, asunto, mensaje,archivo} = req.body;
+    const {email, asunto, mensaje} = req.body;
+    const archivo = req.file;
     try {
         let transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
@@ -23,7 +24,8 @@ export const enviarMensaje = async (req,res) => {
             text: mensaje,
             attachments: [
                 {
-                    filename: archivo,
+                    filename: archivo ? archivo.originalname : undefined,
+                    path: archivo ? archivo.path : undefined
                 }
             ]
         });
