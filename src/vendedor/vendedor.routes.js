@@ -11,8 +11,8 @@ router.put("/vendedor/:id", updateVendedor);
 router.delete("/vendedor/:id", deleteVendedor);
 
 router.post("/vendedor/premio", crearPremio);
-router.get("/vendedor/uservendedor", getAllUserVendedor);
-router.get("/vendedor/uservendedor/:id", getUserVendedorById);
-router.post("/vendedor/uservendedor/:id", updateUserVendedor);
+router.get("/vendedorUser", getAllUserVendedor);
+router.get("/vendedorUser/:id", getUserVendedorById);
+router.post("/vendedorUser/:id", updateUserVendedor);
 
 export default router;
