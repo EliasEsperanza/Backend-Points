@@ -156,7 +156,7 @@ export const getClienteById = async (req, res) => {
 export const updateCliente = async (req, res) => {
     try {
         const { id } = req.params;
-        const { nombreCliente, correo, telefono, direccion, dui, nit, nrc, idCategoriaCliente, idTipoCliente } = req.body;
+        const { nombreCliente, correo, telefono, direccion, dui, nit, nrc, idCategoriaCliente, idTipoCliente, passwordHash } = req.body;
         const newTelefonoHash = await hashData(telefono, process.env.SECRET_KEY);
         const newDireccionHash = await hashData(direccion, process.env.SECRET_KEY);
         const newDuiHash = await hashData(dui, process.env.SECRET_KEY);
@@ -167,6 +167,7 @@ export const updateCliente = async (req, res) => {
                 idCliente: id
             }
         });
+        const newPasswordHash = await hashData(passwordHash, process.env.SECRET_KEY);
         await cliente.update({
             nombreCliente,
             dui: newDuiHash,
@@ -177,6 +178,14 @@ export const updateCliente = async (req, res) => {
             correo,
             idCategoriaCliente,
             idTipoCliente
+        });
+        const usuario = await Usuario.findOne({
+            where: {
+                idCliente: id
+            }
+        });
+        await usuario.update({
+            passwordHash: newPasswordHash
         });
         res.json({
             message: 'Cliente actualizado exitosamente',
