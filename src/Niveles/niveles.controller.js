@@ -1,4 +1,5 @@
 import { Niveles } from './Niveles.js';
+import multer from 'multer';
 
 export const getNiveles = async(req, res) =>{
     try {
@@ -13,9 +14,22 @@ export const getNiveles = async(req, res) =>{
     }
 }
 
+// Configuración de multer para almacenar archivos en la carpeta 'uploads'
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function(req, file, cb) {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+
+const upload = multer({ storage: storage });
+
 export const createNiveles = async (req, res)=>{
     try {
-        const { descripcion, puntosInicio, puntosFin, icono} = req.body;
+        const { descripcion, puntosInicio, puntosFin} = req.body;
+        const icono = req.file ? req.file.filename : '';
         const newNivel = await Niveles.create({
             descripcion,
             puntosInicio,
@@ -36,6 +50,8 @@ export const createNiveles = async (req, res)=>{
         });
     }
 }
+// Middleware para subir archivos
+export const uploadImage = upload.single('icono');
 
 export const getNivelesById = async (req,res) =>{
     try {
