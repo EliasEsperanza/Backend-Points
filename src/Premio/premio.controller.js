@@ -1,16 +1,43 @@
 import { Premio } from './Premio.js';
 import { Niveles } from '../Niveles/Niveles.js';
+import multer from 'multer';
+import path from 'path';
+
+// Configuración de multer para almacenar archivos en la carpeta 'uploads'
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function(req, file, cb) {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+
+const upload = multer({ storage: storage });
 
 // Crear un nuevo premio
 export const createPremio = async (req, res) => {
     try {
-        const nuevoPremio = await Premio.create(req.body);
+        const { idNivel, nombrePremio, puntos, estado, descripcion } = req.body;
+        const imagen = req.file ? req.file.filename : '';
+
+        const nuevoPremio = await Premio.create({
+            idNivel,
+            nombrePremio,
+            puntos,
+            estado,
+            imagen,
+            descripcion
+        });
+
         res.status(201).json(nuevoPremio);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
+// Middleware para subir archivos
+export const uploadImage = upload.single('imagen');
 // Obtener todos los premios
 export const getPremios = async (req, res) => {
     try {
