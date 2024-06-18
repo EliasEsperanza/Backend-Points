@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { createNiveles , getNiveles, getNivelesById, updateNiveles, deleteNivel } from "./niveles.controller.js";
+import { createNiveles , getNiveles, getNivelesById, updateNiveles, deleteNivel,uploadImage } from "./niveles.controller.js";
 
 const router = Router();
 
-router.get('/niveles', getNiveles);
+router.get('/niveles', uploadImage, getNiveles);
 router.post('/niveles', createNiveles);
 router.get('/niveles/:id',getNivelesById);
 router.put('/niveles/:id', updateNiveles);
