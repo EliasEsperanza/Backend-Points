@@ -51,7 +51,7 @@ export const createNiveles = async (req, res)=>{
     }
 }
 // Middleware para subir archivos
-export const uploadImage = upload.single('icono');
+export const uploadIcono = upload.single('icono');
 
 export const getNivelesById = async (req,res) =>{
     try {
